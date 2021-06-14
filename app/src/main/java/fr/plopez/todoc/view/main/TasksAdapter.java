@@ -1,4 +1,4 @@
-package fr.plopez.todoc.ui;
+package fr.plopez.todoc.view.main;
 
 import android.content.res.ColorStateList;
 import android.view.LayoutInflater;
@@ -11,9 +11,11 @@ import androidx.appcompat.widget.AppCompatImageView;
 import androidx.recyclerview.widget.RecyclerView;
 
 import fr.plopez.todoc.R;
-import fr.plopez.todoc.model.Project;
-import fr.plopez.todoc.model.Task;
+import fr.plopez.todoc.data.model.Project;
+import fr.plopez.todoc.data.model.Task;
+import fr.plopez.todoc.databinding.ItemTaskBinding;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -26,7 +28,7 @@ public class TasksAdapter extends RecyclerView.Adapter<TasksAdapter.TaskViewHold
      * The list of tasks the adapter deals with
      */
     @NonNull
-    private List<Task> tasks;
+    private final List<Task> tasks = new ArrayList<>();
 
     /**
      * The listener for when a task needs to be deleted
@@ -37,20 +39,19 @@ public class TasksAdapter extends RecyclerView.Adapter<TasksAdapter.TaskViewHold
     /**
      * Instantiates a new TasksAdapter.
      *
-     * @param tasks the list of tasks the adapter deals with to set
      */
-    TasksAdapter(@NonNull final List<Task> tasks, @NonNull final DeleteTaskListener deleteTaskListener) {
-        this.tasks = tasks;
+    TasksAdapter(@NonNull final DeleteTaskListener deleteTaskListener) {
         this.deleteTaskListener = deleteTaskListener;
     }
 
     /**
      * Updates the list of tasks the adapter deals with.
      *
-     * @param tasks the list of tasks the adapter deals with to set
+     * @param taskListUpdated the list of tasks the adapter deals with to set
      */
-    void updateTasks(@NonNull final List<Task> tasks) {
-        this.tasks = tasks;
+    void updateTasks(@NonNull List<Task> taskListUpdated) {
+        tasks.clear();
+        tasks.addAll(taskListUpdated);
         notifyDataSetChanged();
     }
 
@@ -71,17 +72,6 @@ public class TasksAdapter extends RecyclerView.Adapter<TasksAdapter.TaskViewHold
         return tasks.size();
     }
 
-    /**
-     * Listener for deleting tasks
-     */
-    public interface DeleteTaskListener {
-        /**
-         * Called when a task needs to be deleted.
-         *
-         * @param task the task that needs to be deleted
-         */
-        void onDeleteTask(Task task);
-    }
 
     /**
      * <p>ViewHolder for task items in the tasks list</p>
@@ -114,13 +104,16 @@ public class TasksAdapter extends RecyclerView.Adapter<TasksAdapter.TaskViewHold
          */
         private final DeleteTaskListener deleteTaskListener;
 
+        private long taskId;
+
         /**
          * Instantiates a new TaskViewHolder.
          *
          * @param itemView the view of the task item
          * @param deleteTaskListener the listener for when a task needs to be deleted to set
          */
-        TaskViewHolder(@NonNull View itemView, @NonNull DeleteTaskListener deleteTaskListener) {
+        TaskViewHolder(@NonNull View itemView,
+                       @NonNull DeleteTaskListener deleteTaskListener) {
             super(itemView);
 
             this.deleteTaskListener = deleteTaskListener;
@@ -133,10 +126,7 @@ public class TasksAdapter extends RecyclerView.Adapter<TasksAdapter.TaskViewHold
             imgDelete.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    final Object tag = view.getTag();
-                    if (tag instanceof Task) {
-                        TaskViewHolder.this.deleteTaskListener.onDeleteTask((Task) tag);
-                    }
+                    deleteTaskListener.onDeleteTask(taskId);
                 }
             });
         }
@@ -147,12 +137,13 @@ public class TasksAdapter extends RecyclerView.Adapter<TasksAdapter.TaskViewHold
          * @param task the task to bind in the item view
          */
         void bind(Task task) {
+            taskId = task.getId();
             lblTaskName.setText(task.getName());
             imgDelete.setTag(task);
 
             final Project taskProject = task.getProject();
             if (taskProject != null) {
-                imgProject.setSupportImageTintList(ColorStateList.valueOf(taskProject.getColor()));
+                imgProject.setImageTintList(ColorStateList.valueOf(taskProject.getColor()));
                 lblProjectName.setText(taskProject.getName());
             } else {
                 imgProject.setVisibility(View.INVISIBLE);

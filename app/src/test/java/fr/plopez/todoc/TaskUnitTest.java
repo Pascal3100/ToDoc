@@ -1,6 +1,6 @@
 package com.cleanup.todoc;
 
-import fr.plopez.todoc.model.Task;
+import fr.plopez.todoc.data.model.Task;
 
 import org.junit.Test;
 

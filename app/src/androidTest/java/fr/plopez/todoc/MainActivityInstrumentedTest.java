@@ -6,7 +6,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.widget.TextView;
 
-import fr.plopez.todoc.ui.MainActivity;
+import fr.plopez.todoc.view.main.MainActivity;
 
 import org.junit.Rule;
 import org.junit.Test;
