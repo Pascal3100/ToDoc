@@ -52,7 +52,7 @@ public class TasksViewModel extends ViewModel {
 
             tasksRepository.addTask(new Task(
                     generateTaskId(),
-                    projectsRepository.getProjectByName(taskName),
+                    projectsRepository.getProjectByName(projectName),
                     taskName,
                     Calendar.getInstance().getTimeInMillis()
             ));
