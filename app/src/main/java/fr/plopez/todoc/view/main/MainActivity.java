@@ -1,12 +1,15 @@
 package fr.plopez.todoc.view.main;
 
 import android.os.Bundle;
+import android.view.Menu;
+import android.view.MenuItem;
+
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
-import androidx.lifecycle.ViewModelStoreOwner;
 
 import fr.plopez.todoc.R;
+import fr.plopez.todoc.ViewModelFactory;
 
 /**
  * <p>Home activity of the application which is displayed when the user opens the app.</p>
@@ -17,6 +20,41 @@ import fr.plopez.todoc.R;
 public class MainActivity extends AppCompatActivity implements ListenerShowAddTaskMenu {
 
     private static final String ADD_TASK_DIALOG = "Add task dialog";
+
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+
+        PossibleSortMethods requiredSortingMethod;
+        int id = item.getItemId();
+
+        if (id == R.id.filter_alphabetical) {
+            requiredSortingMethod = PossibleSortMethods.ALPHABETICAL;
+        } else if (id == R.id.filter_alphabetical_inverted) {
+            requiredSortingMethod = PossibleSortMethods.ALPHABETICAL_INVERTED;
+        } else if (id == R.id.filter_oldest_first) {
+            requiredSortingMethod = PossibleSortMethods.OLD_FIRST;
+        } else if (id == R.id.filter_recent_first) {
+            requiredSortingMethod = PossibleSortMethods.RECENT_FIRST;
+        } else {
+            requiredSortingMethod = PossibleSortMethods.RECENT_FIRST;
+        }
+
+        TasksViewModel tasksViewModel = new ViewModelProvider(
+                this,
+                ViewModelFactory.getInstance())
+                .get(TasksViewModel.class);
+
+        tasksViewModel.setSortingMethod(requiredSortingMethod);
+
+        return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.actions, menu);
+        return true;
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -29,6 +67,8 @@ public class MainActivity extends AppCompatActivity implements ListenerShowAddTa
                     .add(R.id.main_activity_fragment_container, MainActivityFragment.newInstance(), null)
                     .commit();
         }
+
+
     }
 
     @Override

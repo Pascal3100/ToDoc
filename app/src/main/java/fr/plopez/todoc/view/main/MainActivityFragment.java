@@ -9,23 +9,20 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
-import androidx.lifecycle.ViewModelStoreOwner;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import fr.plopez.todoc.ViewModelFactory;
-import fr.plopez.todoc.data.model.Task;
 import fr.plopez.todoc.databinding.ActivityMainFragmentBinding;
 
 public class MainActivityFragment extends Fragment implements DeleteTaskListener{
 
-    private final DeleteTaskListener deleteTaskListener = (DeleteTaskListener) this;
+    private final DeleteTaskListener deleteTaskListener = this;
     private ActivityMainFragmentBinding mainActivityFragmentBinding;
-    private List<String> projectListForDialog = new ArrayList<>();
+    private final List<String> projectListForDialog = new ArrayList<>();
     private TasksViewModel tasksViewModel;
     private ListenerShowAddTaskMenu listenerShowAddTaskMenu;
 
@@ -76,39 +73,23 @@ public class MainActivityFragment extends Fragment implements DeleteTaskListener
         mainActivityFragmentBinding.listTasks.setLayoutManager(new LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false));
         mainActivityFragmentBinding.listTasks.setAdapter(tasksAdapter);
 
-        tasksViewModel.getTasksListLiveData().observe(getViewLifecycleOwner(), new Observer<List<Task>>() {
-            @Override
-            public void onChanged(List<Task> tasks) {
-                tasksAdapter.updateTasks(tasks);
+        tasksViewModel.getTasksListMediatorLiveData().observe(getViewLifecycleOwner(), tasksAdapter::updateTasks);
+
+        tasksViewModel.getNumberOfTaskLiveData().observe(getViewLifecycleOwner(), numberOfTasks -> {
+            if (numberOfTasks == 0) {
+                mainActivityFragmentBinding.listTasks.setVisibility(View.GONE);
+                mainActivityFragmentBinding.lblNoTask.setVisibility(View.VISIBLE);
+            } else {
+                mainActivityFragmentBinding.listTasks.setVisibility(View.VISIBLE);
+                mainActivityFragmentBinding.lblNoTask.setVisibility(View.GONE);
             }
         });
 
-        tasksViewModel.getNumberOfTaskLiveData().observe(getViewLifecycleOwner(), new Observer<Integer>() {
-                    @Override
-                    public void onChanged(Integer numberOfTasks) {
-                        if (numberOfTasks == 0) {
-                            mainActivityFragmentBinding.listTasks.setVisibility(View.GONE);
-                            mainActivityFragmentBinding.lblNoTask.setVisibility(View.VISIBLE);
-                        } else {
-                            mainActivityFragmentBinding.listTasks.setVisibility(View.VISIBLE);
-                            mainActivityFragmentBinding.lblNoTask.setVisibility(View.GONE);
-                        }
-                    }
-                });
+        mainActivityFragmentBinding.fabAddTask.setOnClickListener(v -> listenerShowAddTaskMenu.showAddTaskMenu());
 
-                mainActivityFragmentBinding.fabAddTask.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        listenerShowAddTaskMenu.showAddTaskMenu();
-                    }
-                });
-
-        tasksViewModel.getProjectListLiveData().observe(getViewLifecycleOwner(), new Observer<List<String>>() {
-            @Override
-            public void onChanged(List<String> strings) {
-                projectListForDialog.clear();
-                projectListForDialog.addAll(strings);
-            }
+        tasksViewModel.getProjectListLiveData().observe(getViewLifecycleOwner(), strings -> {
+            projectListForDialog.clear();
+            projectListForDialog.addAll(strings);
         });
 
         // Inflate the layout for this fragment
