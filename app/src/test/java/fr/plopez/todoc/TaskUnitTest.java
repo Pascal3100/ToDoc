@@ -1,6 +1,7 @@
-package com.cleanup.todoc;
+package fr.plopez.todoc;
 
 import fr.plopez.todoc.data.model.Task;
+import fr.plopez.todoc.data.utils.TasksSorterUtil;
 
 import org.junit.Test;
 
@@ -15,7 +16,7 @@ import static org.junit.Assert.assertSame;
 /**
  * Unit tests for tasks
  *
- * @author Gaëtan HERFRAY
+ * @author Gaëtan HERFRAY modified by Pascal Lopez
  */
 public class TaskUnitTest {
     @Test
@@ -41,7 +42,7 @@ public class TaskUnitTest {
         tasks.add(task1);
         tasks.add(task2);
         tasks.add(task3);
-        Collections.sort(tasks, new Task.TaskAZComparator());
+//        Collections.sort(tasks, new TasksSorterUtil.TaskAZComparator());
 
         assertSame(tasks.get(0), task1);
         assertSame(tasks.get(1), task3);
@@ -58,7 +59,7 @@ public class TaskUnitTest {
         tasks.add(task1);
         tasks.add(task2);
         tasks.add(task3);
-        Collections.sort(tasks, new Task.TaskZAComparator());
+//        Collections.sort(tasks, new TasksSorterUtil.TaskZAComparator());
 
         assertSame(tasks.get(0), task2);
         assertSame(tasks.get(1), task3);
@@ -75,7 +76,7 @@ public class TaskUnitTest {
         tasks.add(task1);
         tasks.add(task2);
         tasks.add(task3);
-        Collections.sort(tasks, new Task.TaskRecentComparator());
+//        Collections.sort(tasks, new TasksSorterUtil.TaskRecentComparator());
 
         assertSame(tasks.get(0), task3);
         assertSame(tasks.get(1), task2);
@@ -92,7 +93,7 @@ public class TaskUnitTest {
         tasks.add(task1);
         tasks.add(task2);
         tasks.add(task3);
-        Collections.sort(tasks, new Task.TaskOldComparator());
+//        Collections.sort(tasks, new TasksSorterUtil.TaskOldComparator());
 
         assertSame(tasks.get(0), task1);
         assertSame(tasks.get(1), task2);

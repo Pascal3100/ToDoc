@@ -3,7 +3,6 @@ package fr.plopez.todoc.view.main;
 import androidx.annotation.NonNull;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MediatorLiveData;
-import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.Transformations;
 import androidx.lifecycle.ViewModel;
 
@@ -30,7 +29,6 @@ public class TasksViewModel extends ViewModel {
     private final LiveData<PossibleSortMethods> sortMethodLiveData;
 
     private final MediatorLiveData<List<Task>> tasksListMediatorLiveData = new MediatorLiveData<>();
-    private long taskId = 1;
 
     public TasksViewModel(@NonNull ProjectsRepository projectsRepository,
                           @NonNull TasksRepository tasksRepository,
@@ -45,12 +43,13 @@ public class TasksViewModel extends ViewModel {
         tasksListMediatorLiveData.addSource(tasksListLiveData, taskList -> combine(taskList, sortMethodLiveData.getValue()));
         tasksListMediatorLiveData.addSource(sortMethodLiveData, requiredSortMethod -> combine(tasksListLiveData.getValue(), requiredSortMethod));
 
-        if (numberOfTaskLiveData.getValue() == 0) {
-            addTask("aller à intermarché", "Awesome Project");
-            addTask("faire la cuisine", "Miraculous Actions");
-            addTask("demander la tondeuse", "Circus Project");
-            addTask("finir le P5", "Awesome Project");
-        }
+        // For a Dev purpose only
+//        if (numberOfTaskLiveData.getValue() == 0) {
+//            addTask("aller à intermarché", "Awesome Project");
+//            addTask("faire la cuisine", "Miraculous Actions");
+//            addTask("demander la tondeuse", "Circus Project");
+//            addTask("finir le P5", "Awesome Project");
+//        }
     }
 
     private void combine(List<Task> taskList, PossibleSortMethods sortMethod){
@@ -79,7 +78,7 @@ public class TasksViewModel extends ViewModel {
             addTaskSingleLiveEvent.setValue(AddTaskViewAction.TASK_OK);
 
             tasksRepository.addTask(new Task(
-                    generateTaskId(),
+                    tasksRepository.generateTaskId(),
                     projectsRepository.getProjectByName(projectName),
                     taskName,
                     Calendar.getInstance().getTimeInMillis()
@@ -113,10 +112,6 @@ public class TasksViewModel extends ViewModel {
 
     public LiveData<Integer> getNumberOfTaskLiveData(){
         return numberOfTaskLiveData;
-    }
-
-    private long generateTaskId() {
-        return taskId++;
     }
 
     public LiveData<AddTaskViewAction> getAddTaskSingleLiveEvent(){

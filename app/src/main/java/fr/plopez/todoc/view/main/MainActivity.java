@@ -22,6 +22,7 @@ public class MainActivity extends AppCompatActivity implements ListenerShowAddTa
     private static final String ADD_TASK_DIALOG = "Add task dialog";
 
 
+    // Action when a filtering item is selected
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
 
@@ -50,6 +51,7 @@ public class MainActivity extends AppCompatActivity implements ListenerShowAddTa
         return super.onOptionsItemSelected(item);
     }
 
+    // Generates the menu
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.actions, menu);
@@ -67,10 +69,9 @@ public class MainActivity extends AppCompatActivity implements ListenerShowAddTa
                     .add(R.id.main_activity_fragment_container, MainActivityFragment.newInstance(), null)
                     .commit();
         }
-
-
     }
 
+    // Show the fragment
     @Override
     public void showAddTaskMenu() {
         AddTaskDialogFragment.newInstance().show(getSupportFragmentManager(), ADD_TASK_DIALOG);

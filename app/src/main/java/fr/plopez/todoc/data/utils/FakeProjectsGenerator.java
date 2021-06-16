@@ -5,6 +5,10 @@ import java.util.List;
 
 import fr.plopez.todoc.data.model.Project;
 
+/**
+ * This is a fake projects generator to populate the add task project spinner.
+ *
+ */
 public class FakeProjectsGenerator {
 
     public static List<Project> generateFakeProjects(){

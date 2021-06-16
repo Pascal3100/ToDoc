@@ -6,7 +6,7 @@ import androidx.annotation.NonNull;
 /**
  * <p>Models for project in which tasks are included.</p>
  *
- * @author Gaëtan HERFRAY
+ * @author Gaëtan HERFRAY modified by Pascal Lopez
  */
 public class Project {
     /**

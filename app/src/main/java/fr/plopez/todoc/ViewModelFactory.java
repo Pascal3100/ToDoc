@@ -7,7 +7,6 @@ import androidx.lifecycle.ViewModelProvider;
 import fr.plopez.todoc.data.repositories.FilterRepository;
 import fr.plopez.todoc.data.repositories.ProjectsRepository;
 import fr.plopez.todoc.data.repositories.TasksRepository;
-import fr.plopez.todoc.view.main.MainActivityFragment;
 import fr.plopez.todoc.view.main.TasksViewModel;
 
 public class ViewModelFactory implements ViewModelProvider.Factory {

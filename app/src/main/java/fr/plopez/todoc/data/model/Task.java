@@ -6,7 +6,7 @@ import androidx.annotation.Nullable;
 /**
  * <p>Model for the tasks of the application.</p>
  *
- * @author Gaëtan HERFRAY
+ * @author Gaëtan HERFRAY modified by Pascal Lopez
  */
 public class Task {
     /**
@@ -42,7 +42,7 @@ public class Task {
      * @param creationTimestamp the timestamp when the task has been created to set
      */
 
-    public Task(long id, Project project, @NonNull String name, long creationTimestamp) {
+    public Task(@NonNull long id, @NonNull Project project, @NonNull String name, long creationTimestamp) {
         this.id = id;
         this.project = project;
         this.name = name;
@@ -77,16 +77,6 @@ public class Task {
     @NonNull
     public String getName() {
         return name;
-    }
-
-    /**
-     * Returns the time stamp of the task.
-     *
-     * @return the creationTimestamp of the task
-     */
-    @NonNull
-    public long getCreationTimestamp() {
-        return creationTimestamp;
     }
 
     @NonNull

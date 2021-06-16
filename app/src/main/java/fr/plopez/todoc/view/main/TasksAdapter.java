@@ -13,7 +13,6 @@ import androidx.recyclerview.widget.RecyclerView;
 import fr.plopez.todoc.R;
 import fr.plopez.todoc.data.model.Project;
 import fr.plopez.todoc.data.model.Task;
-import fr.plopez.todoc.databinding.ItemTaskBinding;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -21,7 +20,7 @@ import java.util.List;
 /**
  * <p>Adapter which handles the list of tasks to display in the dedicated RecyclerView.</p>
  *
- * @author Gaëtan HERFRAY
+ * @author Gaëtan HERFRAY modified by Pascal Lopez
  */
 public class TasksAdapter extends RecyclerView.Adapter<TasksAdapter.TaskViewHolder> {
     /**
@@ -76,9 +75,9 @@ public class TasksAdapter extends RecyclerView.Adapter<TasksAdapter.TaskViewHold
     /**
      * <p>ViewHolder for task items in the tasks list</p>
      *
-     * @author Gaëtan HERFRAY
+     * @author Gaëtan HERFRAY modified by Pascal Lopez
      */
-    class TaskViewHolder extends RecyclerView.ViewHolder {
+    static class TaskViewHolder extends RecyclerView.ViewHolder {
         /**
          * The circle icon showing the color of the project
          */
@@ -99,11 +98,6 @@ public class TasksAdapter extends RecyclerView.Adapter<TasksAdapter.TaskViewHold
          */
         private final AppCompatImageView imgDelete;
 
-        /**
-         * The listener for when a task needs to be deleted
-         */
-        private final DeleteTaskListener deleteTaskListener;
-
         private long taskId;
 
         /**
@@ -116,19 +110,12 @@ public class TasksAdapter extends RecyclerView.Adapter<TasksAdapter.TaskViewHold
                        @NonNull DeleteTaskListener deleteTaskListener) {
             super(itemView);
 
-            this.deleteTaskListener = deleteTaskListener;
-
             imgProject = itemView.findViewById(R.id.img_project);
             lblTaskName = itemView.findViewById(R.id.lbl_task_name);
             lblProjectName = itemView.findViewById(R.id.lbl_project_name);
             imgDelete = itemView.findViewById(R.id.img_delete);
 
-            imgDelete.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    deleteTaskListener.onDeleteTask(taskId);
-                }
-            });
+            imgDelete.setOnClickListener(view -> deleteTaskListener.onDeleteTask(taskId));
         }
 
         /**

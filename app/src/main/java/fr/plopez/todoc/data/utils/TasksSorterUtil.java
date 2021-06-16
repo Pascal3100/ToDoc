@@ -7,6 +7,10 @@ import java.util.List;
 import fr.plopez.todoc.data.model.Task;
 import fr.plopez.todoc.view.main.PossibleSortMethods;
 
+/**
+ * Tasks sort util.
+ *
+ */
 public class TasksSorterUtil {
 
     public static List<Task> sortBy(PossibleSortMethods sortMethod, List<Task> tasks) {
