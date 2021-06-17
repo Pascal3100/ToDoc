@@ -11,7 +11,7 @@ import fr.plopez.todoc.data.model.Project;
  */
 public class FakeProjectsGenerator {
 
-    public static List<Project> generateFakeProjects(){
+    public List<Project> generateFakeProjects(){
         long id = 1;
         return Arrays.asList(
                 // TODO : extract string and colors to ressources?

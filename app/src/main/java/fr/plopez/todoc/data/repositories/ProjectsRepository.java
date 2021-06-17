@@ -25,7 +25,8 @@ public class ProjectsRepository {
      *
      */
     public ProjectsRepository(){
-        projectList.addAll(FakeProjectsGenerator.generateFakeProjects());
+        FakeProjectsGenerator fakeProjectsGenerator = new FakeProjectsGenerator();
+        projectList.addAll(fakeProjectsGenerator.generateFakeProjects());
         updateProjectListLiveData();
     }
 
