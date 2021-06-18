@@ -1,7 +1,8 @@
 package fr.plopez.todoc.data.model;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
+
+import java.util.Objects;
 
 /**
  * <p>Model for the tasks of the application.</p>
@@ -12,7 +13,6 @@ public class Task {
     /**
      * The unique identifier of the task
      */
-    @NonNull
     private final long id;
 
     /**
@@ -30,7 +30,6 @@ public class Task {
     /**
      * The timestamp when the task has been created
      */
-    @NonNull
     private final long creationTimestamp;
 
     /**
@@ -42,7 +41,7 @@ public class Task {
      * @param creationTimestamp the timestamp when the task has been created to set
      */
 
-    public Task(@NonNull long id, @NonNull Project project, @NonNull String name, long creationTimestamp) {
+    public Task(long id, @NonNull Project project, @NonNull String name, long creationTimestamp) {
         this.id = id;
         this.project = project;
         this.name = name;
@@ -54,7 +53,6 @@ public class Task {
      *
      * @return the unique identifier of the task
      */
-    @NonNull
     public long getId() {
         return id;
     }
@@ -64,7 +62,7 @@ public class Task {
      *
      * @return the project associated to the task
      */
-    @Nullable
+    @NonNull
     public Project getProject() {
         return project;
     }
@@ -77,6 +75,22 @@ public class Task {
     @NonNull
     public String getName() {
         return name;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Task task = (Task) o;
+        return id == task.id &&
+                creationTimestamp == task.creationTimestamp &&
+                project.equals(task.project) &&
+                name.equals(task.name);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(project, name);
     }
 
     @NonNull

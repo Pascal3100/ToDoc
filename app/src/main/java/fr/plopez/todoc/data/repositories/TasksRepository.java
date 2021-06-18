@@ -52,7 +52,6 @@ public class TasksRepository {
      *
      */
     public void addTask(@NonNull Task newTask){
-        // TODO : peut etre prévoir ici quelques controles???
         taskList.add(newTask);
         updateTaskListLiveData();
     }
@@ -60,7 +59,7 @@ public class TasksRepository {
      * Deletes an existing task.
      *
      */
-    public void deleteTask(@NonNull long taskIdToDelete){
+    public void deleteTask(long taskIdToDelete){
         for (Task task : taskList){
             if (task.getId() == taskIdToDelete){
                 taskList.remove(task);

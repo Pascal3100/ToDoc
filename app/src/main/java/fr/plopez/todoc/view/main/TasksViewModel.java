@@ -59,31 +59,24 @@ public class TasksViewModel extends ViewModel {
     }
 
     public void addTask(String taskName, String projectName){
-        boolean taskOk = false;
-        boolean projectOk = false;
-
-        if(taskName.trim().isEmpty()){
+        if(taskName == null || taskName.trim().isEmpty()){
             addTaskSingleLiveEvent.setValue(AddTaskViewAction.DISPLAY_TASK_EMPTY_MESSAGE);
-        } else {
-            taskOk = true;
+            return;
         }
 
         if (projectsRepository.getProjectByName(projectName) == null) {
             addTaskSingleLiveEvent.setValue(AddTaskViewAction.DISPLAY_PROJECT_EMPTY_MESSAGE);
-        } else {
-            projectOk = true;
+            return;
         }
 
-        if (taskOk && projectOk){
-            addTaskSingleLiveEvent.setValue(AddTaskViewAction.TASK_OK);
+        addTaskSingleLiveEvent.setValue(AddTaskViewAction.TASK_OK);
 
-            tasksRepository.addTask(new Task(
-                    tasksRepository.generateTaskId(),
-                    projectsRepository.getProjectByName(projectName),
-                    taskName,
-                    Calendar.getInstance().getTimeInMillis()
-            ));
-        }
+        tasksRepository.addTask(new Task(
+                tasksRepository.generateTaskId(),
+                projectsRepository.getProjectByName(projectName),
+                taskName,
+                Calendar.getInstance().getTimeInMillis()
+        ));
     }
 
     public LiveData<List<String>> getProjectListLiveData(){

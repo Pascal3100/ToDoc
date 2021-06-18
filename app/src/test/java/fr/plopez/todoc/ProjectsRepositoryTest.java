@@ -6,16 +6,10 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Mock;
-import org.mockito.MockedStatic;
-import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
-
-import java.util.Arrays;
 
 import fr.plopez.todoc.data.model.Project;
 import fr.plopez.todoc.data.repositories.ProjectsRepository;
-import fr.plopez.todoc.data.utils.FakeProjectsGenerator;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -29,10 +23,6 @@ public class ProjectsRepositoryTest {
     // rules
     @Rule
     public InstantTaskExecutorRule instantTaskExecutorRule = new InstantTaskExecutorRule();
-
-    // mocks
-    @Mock
-    private FakeProjectsGenerator fakeProjectsGeneratorMock;
 
     // class variables
     private ProjectsRepository projectsRepository;

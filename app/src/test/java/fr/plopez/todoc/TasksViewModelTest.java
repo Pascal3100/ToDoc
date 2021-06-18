@@ -19,10 +19,12 @@ import fr.plopez.todoc.data.model.Task;
 import fr.plopez.todoc.data.repositories.FilterRepository;
 import fr.plopez.todoc.data.repositories.ProjectsRepository;
 import fr.plopez.todoc.data.repositories.TasksRepository;
+import fr.plopez.todoc.view.main.AddTaskViewAction;
 import fr.plopez.todoc.view.main.PossibleSortMethods;
 import fr.plopez.todoc.view.main.TasksViewModel;
 
 import static org.junit.Assert.assertEquals;
+import static org.mockito.Mockito.times;
 
 
 @RunWith(MockitoJUnitRunner.class)
@@ -44,7 +46,7 @@ public class TasksViewModelTest {
     private final Task AA_TASK = new Task(1, PROJECT, AA_TASK_NAME, 100001);
     private final Task HH_TASK = new Task(2, PROJECT, HH_TASK_NAME, 100002);
     private final Task ZZ_TASK = new Task(3, PROJECT, ZZ_TASK_NAME, 100003);
-    private final Task NEW_TASK = new Task(4, PROJECT, NEW_TASK, 100004);
+    private final Task NEW_TASK = new Task(4, PROJECT, NEW_TASK_NAME, 100004);
     private final int NOMINAL_NUMBER_OF_TASKS = 3;
 
     // Rules
@@ -80,34 +82,149 @@ public class TasksViewModelTest {
         tasksViewModel.addTask(NEW_TASK_NAME, GOOD_PROJECT_NAME);
 
         // When
-        List<Task> resultListTasks = LiveDataTestUtils
-                .getOrAwaitValue(tasksViewModel.getTasksListMediatorLiveData());
-        int resultNumberOfTasks = LiveDataTestUtils
-                .getOrAwaitValue(tasksViewModel.getNumberOfTaskLiveData());
+        AddTaskViewAction resultErrorMessage = LiveDataTestUtils
+                .getOrAwaitValue(tasksViewModel.getAddTaskSingleLiveEvent());
 
         // Then
-        assertEquals(NEW_TASK, resultListTasks.get(0));
-        assertEquals(NOMINAL_NUMBER_OF_TASKS+1, resultNumberOfTasks);
+        assertEquals(AddTaskViewAction.TASK_OK, resultErrorMessage);
+        Mockito.verify(tasksRepositoryMock, times(1)).addTask(Mockito.any(Task.class));
+    }
+
+    // Verify tasks are not added when errors in inputs
+    @Test
+    public void add_task_errors_null_both_input_test() throws InterruptedException {
+        // Given
+        tasksViewModel.addTask(NULL_TASK_NAME, NULL_PROJECT_NAME);
+
+        // When
+        AddTaskViewAction resultErrorMessage = LiveDataTestUtils
+                .getOrAwaitValue(tasksViewModel.getAddTaskSingleLiveEvent());
+
+        // Then
+        assertEquals(AddTaskViewAction.DISPLAY_TASK_EMPTY_MESSAGE, resultErrorMessage);
+        Mockito.verify(tasksRepositoryMock, times(0)).addTask(Mockito.any(Task.class));
+    }
+
+    // Verify tasks are not added when errors in inputs
+    @Test
+    public void add_task_errors_null_task_input_test() throws InterruptedException {
+        // Given
+        tasksViewModel.addTask(NULL_TASK_NAME, GOOD_PROJECT_NAME);
+
+        // When
+        AddTaskViewAction resultErrorMessage = LiveDataTestUtils
+                .getOrAwaitValue(tasksViewModel.getAddTaskSingleLiveEvent());
+
+        // Then
+        assertEquals(AddTaskViewAction.DISPLAY_TASK_EMPTY_MESSAGE, resultErrorMessage);
+        Mockito.verify(tasksRepositoryMock, times(0)).addTask(Mockito.any(Task.class));
+    }
+
+    // Verify tasks are not added when errors in inputs
+    @Test
+    public void add_task_errors_empty_task_input_test() throws InterruptedException {
+        // Given
+        tasksViewModel.addTask(EMPTY_TASK_NAME, GOOD_PROJECT_NAME);
+
+        // When
+        AddTaskViewAction resultErrorMessage = LiveDataTestUtils
+                .getOrAwaitValue(tasksViewModel.getAddTaskSingleLiveEvent());
+
+        // Then
+        assertEquals(AddTaskViewAction.DISPLAY_TASK_EMPTY_MESSAGE, resultErrorMessage);
+        Mockito.verify(tasksRepositoryMock, times(0)).addTask(Mockito.any(Task.class));
+    }
+
+    // Verify tasks are not added when errors in inputs
+    @Test
+    public void add_task_errors_null_project_input_test() throws InterruptedException {
+        // Given
+        tasksViewModel.addTask(TASK_NAME, NULL_PROJECT_NAME);
+
+        // When
+        AddTaskViewAction resultErrorMessage = LiveDataTestUtils
+                .getOrAwaitValue(tasksViewModel.getAddTaskSingleLiveEvent());
+
+        // Then
+        assertEquals(AddTaskViewAction.DISPLAY_PROJECT_EMPTY_MESSAGE, resultErrorMessage);
+        Mockito.verify(tasksRepositoryMock, times(0)).addTask(Mockito.any(Task.class));
     }
 
     @Test
     public void delete_task_test(){
         // Given
+        long SUPER_LONG_ID = 1000000101010L;
 
         // When
+        tasksViewModel.deleteTask(SUPER_LONG_ID);
 
         // Then
-
+        Mockito.verify(tasksRepositoryMock, times(1)).deleteTask(SUPER_LONG_ID);
     }
 
     // Verify that tasks are sorted the right way
     @Test
-    public void sort_tasks_test(){
+    public void sort_tasks_default_most_recent_test() throws InterruptedException {
+        // Given
+        // Default sorting order is most recent first
 
+        // When
+        List<Task> result = LiveDataTestUtils
+                .getOrAwaitValue(tasksViewModel.getTasksListMediatorLiveData());
+
+        // Then
+        assertEquals(ZZ_TASK, result.get(0));
+        assertEquals(HH_TASK, result.get(1));
+        assertEquals(AA_TASK, result.get(2));
     }
 
+    // Verify that tasks are sorted the right way
+    @Test
+    public void sort_tasks_most_old_test() throws InterruptedException {
+        // Given
+        sortMethodMutableLiveData.setValue(PossibleSortMethods.OLD_FIRST);
 
+        // When
+        List<Task> result = LiveDataTestUtils
+                .getOrAwaitValue(tasksViewModel.getTasksListMediatorLiveData());
 
+        // Then
+        assertEquals(AA_TASK, result.get(0));
+        assertEquals(HH_TASK, result.get(1));
+        assertEquals(ZZ_TASK, result.get(2));
+    }
+
+    // Verify that tasks are sorted the right way
+    @Test
+    public void sort_tasks_alphabetical_test() throws InterruptedException {
+        // Given
+        sortMethodMutableLiveData.setValue(PossibleSortMethods.ALPHABETICAL);
+
+        // When
+        List<Task> result = LiveDataTestUtils
+                .getOrAwaitValue(tasksViewModel.getTasksListMediatorLiveData());
+
+        // Then
+        assertEquals(AA_TASK, result.get(0));
+        assertEquals(HH_TASK, result.get(1));
+        assertEquals(ZZ_TASK, result.get(2));
+    }
+
+    // Verify that tasks are sorted the right way
+    @Test
+    public void sort_tasks_invert_alphabetical_test() throws InterruptedException {
+        // Given
+        sortMethodMutableLiveData.setValue(PossibleSortMethods.ALPHABETICAL_INVERTED);
+
+        // When
+        List<Task> result = LiveDataTestUtils
+                .getOrAwaitValue(tasksViewModel.getTasksListMediatorLiveData());
+
+        // Then
+        assertEquals(ZZ_TASK, result.get(0));
+        assertEquals(HH_TASK, result.get(1));
+        assertEquals(AA_TASK, result.get(2));
+    }
 
     // region IN
     private List<Task> getTaskList() {
@@ -122,13 +239,17 @@ public class TasksViewModelTest {
 
     private void wireUpTasksRepositoryMock() {
         taskListMutableLiveData.setValue(getTaskList());
+        MutableLiveData<Integer> numberOfTasksLiveData = new MutableLiveData<Integer>(taskListMutableLiveData.getValue().size());
 
         Mockito.doReturn(taskListMutableLiveData)
                 .when(tasksRepositoryMock)
                 .getTaskListLiveData();
-        Mockito.doReturn(taskListMutableLiveData.getValue().size())
+        Mockito.doReturn(numberOfTasksLiveData)
                 .when(tasksRepositoryMock)
                 .getNumberOfTaskLiveData();
+        Mockito.doReturn(4L)
+                .when(tasksRepositoryMock)
+                .generateTaskId();
     }
 
     private void wireUpProjectsRepositoryMock() {
@@ -137,15 +258,9 @@ public class TasksViewModelTest {
         projectsList.add(PROJECT);
         projectListMutableLiveData.setValue(projectsList);
 
-        Mockito.doReturn(projectListMutableLiveData)
-                .when(projectsRepositoryMock)
-                .getProjectListLiveData();
         Mockito.doReturn(PROJECT)
                 .when(projectsRepositoryMock)
                 .getProjectByName(GOOD_PROJECT_NAME);
-        Mockito.doReturn(null)
-                .when(projectsRepositoryMock)
-                .getProjectByName(BAD_PROJECT_NAME);
         Mockito.doReturn(null)
                 .when(projectsRepositoryMock)
                 .getProjectByName(NULL_PROJECT_NAME);
