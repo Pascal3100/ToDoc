@@ -11,8 +11,6 @@ import androidx.appcompat.widget.AppCompatImageView;
 import androidx.recyclerview.widget.RecyclerView;
 
 import fr.plopez.todoc.R;
-import fr.plopez.todoc.data.model.Project;
-import fr.plopez.todoc.data.model.Task;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -27,7 +25,7 @@ public class TasksAdapter extends RecyclerView.Adapter<TasksAdapter.TaskViewHold
      * The list of tasks the adapter deals with
      */
     @NonNull
-    private final List<Task> tasks = new ArrayList<>();
+    private final List<TaskViewState> tasksViewStateList = new ArrayList<>();
 
     /**
      * The listener for when a task needs to be deleted
@@ -46,11 +44,11 @@ public class TasksAdapter extends RecyclerView.Adapter<TasksAdapter.TaskViewHold
     /**
      * Updates the list of tasks the adapter deals with.
      *
-     * @param taskListUpdated the list of tasks the adapter deals with to set
+     * @param tasksViewStateListUpdated the list of tasks the adapter deals with to set
      */
-    void updateTasks(@NonNull List<Task> taskListUpdated) {
-        tasks.clear();
-        tasks.addAll(taskListUpdated);
+    void updateTasks(@NonNull List<TaskViewState> tasksViewStateListUpdated) {
+        tasksViewStateList.clear();
+        tasksViewStateList.addAll(tasksViewStateListUpdated);
         notifyDataSetChanged();
     }
 
@@ -63,12 +61,12 @@ public class TasksAdapter extends RecyclerView.Adapter<TasksAdapter.TaskViewHold
 
     @Override
     public void onBindViewHolder(@NonNull TaskViewHolder taskViewHolder, int position) {
-        taskViewHolder.bind(tasks.get(position));
+        taskViewHolder.bind(tasksViewStateList.get(position));
     }
 
     @Override
     public int getItemCount() {
-        return tasks.size();
+        return tasksViewStateList.size();
     }
 
 
@@ -121,22 +119,14 @@ public class TasksAdapter extends RecyclerView.Adapter<TasksAdapter.TaskViewHold
         /**
          * Binds a task to the item view.
          *
-         * @param task the task to bind in the item view
+         * @param taskViewState the task to bind in the item view
          */
-        void bind(Task task) {
-            taskId = task.getId();
-            lblTaskName.setText(task.getName());
-            imgDelete.setTag(task);
-
-            Project taskProject = task.getProject();
-            if (taskProject != null) {
-                imgProject.setImageTintList(ColorStateList.valueOf(taskProject.getColor()));
-                lblProjectName.setText(taskProject.getName());
-            } else {
-                imgProject.setVisibility(View.INVISIBLE);
-                lblProjectName.setText("");
-            }
-
+        void bind(TaskViewState taskViewState) {
+            taskId = taskViewState.getTaskId();
+            lblTaskName.setText(taskViewState.getTaskName());
+            imgDelete.setTag(taskViewState);
+            imgProject.setImageTintList(ColorStateList.valueOf(taskViewState.getProjectColor()));
+            lblProjectName.setText(taskViewState.getProjectName());
         }
     }
 }

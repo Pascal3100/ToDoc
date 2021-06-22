@@ -40,8 +40,10 @@ public class TasksViewModel extends ViewModel {
         numberOfTaskLiveData = tasksRepository.getNumberOfTaskLiveData();
         sortMethodLiveData = filterRepository.getRequiredSortingMethod();
 
-        tasksListMediatorLiveData.addSource(tasksListLiveData, taskList -> combine(taskList, sortMethodLiveData.getValue()));
-        tasksListMediatorLiveData.addSource(sortMethodLiveData, requiredSortMethod -> combine(tasksListLiveData.getValue(), requiredSortMethod));
+        tasksListMediatorLiveData.addSource(tasksListLiveData,
+                taskList -> combine(taskList, sortMethodLiveData.getValue()));
+        tasksListMediatorLiveData.addSource(sortMethodLiveData,
+                requiredSortMethod -> combine(tasksListLiveData.getValue(), requiredSortMethod));
 
         // For a Dev purpose only
 //        if (numberOfTaskLiveData.getValue() == 0) {
@@ -72,8 +74,7 @@ public class TasksViewModel extends ViewModel {
         addTaskSingleLiveEvent.setValue(AddTaskViewAction.TASK_OK);
 
         tasksRepository.addTask(new Task(
-                tasksRepository.generateTaskId(),
-                projectsRepository.getProjectByName(projectName),
+                projectsRepository.getProjectByName(projectName).getId(),
                 taskName,
                 Calendar.getInstance().getTimeInMillis()
         ));
@@ -99,8 +100,21 @@ public class TasksViewModel extends ViewModel {
         tasksRepository.deleteTask(taskId);
     }
 
-    public LiveData<List<Task>> getTasksListMediatorLiveData(){
-        return tasksListMediatorLiveData;
+    public LiveData<List<TaskViewState>> getTasksListMediatorLiveData(){
+        return Transformations.map(tasksListMediatorLiveData, this::mapTasksToTasksViewState);
+    }
+
+    private List<TaskViewState> mapTasksToTasksViewState(List<Task> taskList) {
+        List<TaskViewState> taskViewStateList = new ArrayList<>();
+        for (Task task : taskList) {
+            Project project = projectsRepository.getProjectById(task.getProjectId());
+            taskViewStateList.add(new TaskViewState(
+                    task.getId(),
+                    task.getName(),
+                    project.getColor(),
+                    project.getName()));
+        }
+        return taskViewStateList;
     }
 
     public LiveData<Integer> getNumberOfTaskLiveData(){

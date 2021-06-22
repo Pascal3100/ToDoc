@@ -1,5 +1,7 @@
 package fr.plopez.todoc.data.repositories;
 
+import android.app.Application;
+
 import androidx.annotation.Nullable;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
@@ -17,26 +19,20 @@ import fr.plopez.todoc.data.utils.FakeProjectsGenerator;
  */
 public class ProjectsRepository {
 
-    private final MutableLiveData<List<Project>> projectListLiveData = new MutableLiveData<>();
-    private final List<Project> projectList = new ArrayList<>();
+    private final LiveData<List<Project>> projectListLiveData;
 
     /**
      * Instantiates a new Project.
      *
      */
-    public ProjectsRepository(){
-        FakeProjectsGenerator fakeProjectsGenerator = new FakeProjectsGenerator();
-        projectList.addAll(fakeProjectsGenerator.generateFakeProjects());
-        updateProjectListLiveData();
+    public ProjectsRepository(Application application){
+        TasksDatabase database = TasksDatabase.getDatabase(application);
+        ProjectsDao projectsDao = database.projectsDao();
+        projectListLiveData = projectsDao.getAllProjects();
     }
 
     public LiveData<List<Project>> getProjectListLiveData(){
         return projectListLiveData;
-    }
-
-
-    private void updateProjectListLiveData() {
-        projectListLiveData.setValue(projectList);
     }
 
     /**
@@ -48,9 +44,24 @@ public class ProjectsRepository {
      */
     @Nullable
     public Project getProjectByName(String projectName) {
-        for (Project project : projectList) {
+        if (projectListLiveData.getValue() == null){
+            return null;
+        }
+        for (Project project : projectListLiveData.getValue()) {
             if (project.getName().equals(projectName))
                 return project;
+        }
+        return null;
+    }
+    @Nullable
+    public Project getProjectById(long projectId) {
+        if (projectListLiveData.getValue() == null){
+            return null;
+        }
+        for (Project project : projectListLiveData.getValue()) {
+            if (project.getId() == projectId) {
+                return project;
+            }
         }
         return null;
     }

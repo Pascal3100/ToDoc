@@ -1,8 +1,11 @@
 package fr.plopez.todoc.data.repositories;
 
+import android.app.Application;
+
 import androidx.annotation.NonNull;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
+import androidx.lifecycle.Observer;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -16,17 +19,19 @@ import fr.plopez.todoc.data.model.Task;
  */
 public class TasksRepository {
 
-    private final MutableLiveData<List<Task>> taskListLiveData = new MutableLiveData<>();
-    private final MutableLiveData<Integer> numberOfTaskLiveData = new MutableLiveData<>();
-    private final List<Task> taskList = new ArrayList<>();
-    private long taskId = 0;
+    private final LiveData<List<Task>> taskListLiveData;
+    private final LiveData<Integer> numberOfTaskLiveData;
+    private final TasksDao tasksDao;
 
     /**
      * Instantiates a new TasksRepository.
      *
      */
-    public TasksRepository(){
-        updateTaskListLiveData();
+    public TasksRepository(Application application){
+        TasksDatabase database = TasksDatabase.getDatabase(application);
+        tasksDao = database.tasksDao();
+        taskListLiveData = tasksDao.getAllTasks();
+        numberOfTaskLiveData = tasksDao.getNumberOfTasks();
     }
 
     /**
@@ -52,36 +57,23 @@ public class TasksRepository {
      *
      */
     public void addTask(@NonNull Task newTask){
-        taskList.add(newTask);
-        updateTaskListLiveData();
+        TasksDatabase.databaseWriteExecutor.execute(new Runnable() {
+            @Override
+            public void run() {
+                tasksDao.insertTask(newTask);
+            }
+        });
     }
     /**
      * Deletes an existing task.
      *
      */
     public void deleteTask(long taskIdToDelete){
-        for (Task task : taskList){
-            if (task.getId() == taskIdToDelete){
-                taskList.remove(task);
-                break;
+        TasksDatabase.databaseWriteExecutor.execute(new Runnable() {
+            @Override
+            public void run() {
+                tasksDao.deleteTask(taskIdToDelete);
             }
-        }
-        updateTaskListLiveData();
-    }
-    /**
-     * Updates tasks list
-     *
-     */
-    private void updateTaskListLiveData() {
-        taskListLiveData.setValue(taskList);
-        numberOfTaskLiveData.setValue(taskList.size());
-    }
-
-    /**
-     * Generates tasks ids
-     *
-     */
-    public long generateTaskId() {
-        return taskId++;
+        });
     }
 }

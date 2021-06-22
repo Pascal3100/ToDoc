@@ -7,6 +7,7 @@ import androidx.lifecycle.ViewModelProvider;
 import fr.plopez.todoc.data.repositories.FilterRepository;
 import fr.plopez.todoc.data.repositories.ProjectsRepository;
 import fr.plopez.todoc.data.repositories.TasksRepository;
+import fr.plopez.todoc.utils.App;
 import fr.plopez.todoc.view.main.TasksViewModel;
 
 public class ViewModelFactory implements ViewModelProvider.Factory {
@@ -24,8 +25,8 @@ public class ViewModelFactory implements ViewModelProvider.Factory {
         return factory;
     }
 
-    private final ProjectsRepository projectsRepository = new ProjectsRepository();
-    private final TasksRepository tasksRepository = new TasksRepository();
+    private final ProjectsRepository projectsRepository = new ProjectsRepository(App.getApplication());
+    private final TasksRepository tasksRepository = new TasksRepository(App.getApplication());
     private final FilterRepository filterRepository = new FilterRepository();
 
     @NonNull

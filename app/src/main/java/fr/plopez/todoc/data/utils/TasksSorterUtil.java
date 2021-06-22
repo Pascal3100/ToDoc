@@ -1,5 +1,6 @@
 package fr.plopez.todoc.data.utils;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
@@ -14,6 +15,11 @@ import fr.plopez.todoc.view.main.PossibleSortMethods;
 public class TasksSorterUtil {
 
     public static List<Task> sortBy(PossibleSortMethods sortMethod, List<Task> tasks) {
+
+        if (tasks == null) {
+            return new ArrayList<>();
+        }
+
         switch (sortMethod) {
             case ALPHABETICAL:
                 Collections.sort(tasks, new TaskAZComparator());

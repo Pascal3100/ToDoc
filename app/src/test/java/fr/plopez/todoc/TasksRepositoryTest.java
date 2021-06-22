@@ -11,6 +11,7 @@ import java.util.List;
 import fr.plopez.todoc.data.model.Project;
 import fr.plopez.todoc.data.model.Task;
 import fr.plopez.todoc.data.repositories.TasksRepository;
+import fr.plopez.todoc.utils.App;
 
 import static org.junit.Assert.assertEquals;
 
@@ -20,8 +21,8 @@ public class TasksRepositoryTest {
     private final String NEW_TASK_NAME = "NEW_TASK_NAME";
     private final String GOOD_PROJECT_NAME = "GOOD_PROJECT_NAME";
 
-    private final Project PROJECT = new Project(1, GOOD_PROJECT_NAME, 0xFFA3CED2);
-    private final Task NEW_TASK = new Task(4, PROJECT, NEW_TASK_NAME, 100004);
+    private final Project PROJECT = new Project(GOOD_PROJECT_NAME, 0xFFA3CED2);
+    private final Task NEW_TASK = new Task(PROJECT, NEW_TASK_NAME, 100004);
 
     // Rules
     @Rule
@@ -35,7 +36,7 @@ public class TasksRepositoryTest {
 
     @Before
     public void setUp(){
-        tasksRepository = new TasksRepository();
+        tasksRepository = new TasksRepository(App.getApplication());
     }
 
     // verify that tasks are correctly added
