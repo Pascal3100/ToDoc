@@ -4,16 +4,18 @@ import androidx.annotation.NonNull;
 import androidx.room.ColumnInfo;
 import androidx.room.Entity;
 import androidx.room.ForeignKey;
-import androidx.room.Ignore;
 import androidx.room.PrimaryKey;
 
 import java.util.Objects;
 
-@Entity(tableName = "task",
-        foreignKeys = @ForeignKey(
-                entity = Project.class,
-                parentColumns = "project_id",
-                childColumns = "project_id"))
+@Entity(
+    tableName = "task",
+    foreignKeys = @ForeignKey(
+        entity = Project.class,
+        parentColumns = "project_id",
+        childColumns = "project_id"
+    )
+)
 public class Task {
     @PrimaryKey(autoGenerate = true)
     @ColumnInfo(name = "task_id")
@@ -40,13 +42,14 @@ public class Task {
         return creationTimestamp;
     }
 
-    public void setId(long id){
+    public void setId(long id) {
         this.id = id;
     }
 
     public long getId() {
         return id;
     }
+
     @NonNull
     public long getProjectId() {
         return projectId;
@@ -65,9 +68,9 @@ public class Task {
         if (o == null || getClass() != o.getClass()) return false;
         Task task = (Task) o;
         return id == task.id &&
-                projectId == task.projectId &&
-                creationTimestamp == task.creationTimestamp &&
-                name.equals(task.name);
+            projectId == task.projectId &&
+            creationTimestamp == task.creationTimestamp &&
+            name.equals(task.name);
     }
 
     @Override

@@ -8,6 +8,7 @@ import androidx.room.Room;
 import androidx.room.RoomDatabase;
 import androidx.sqlite.db.SupportSQLiteDatabase;
 
+import java.util.concurrent.Executor;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -23,10 +24,9 @@ public abstract class TasksDatabase extends RoomDatabase {
 
     private static volatile TasksDatabase INSTANCE;
     private static final int NUMBER_OF_THREADS = 4;
-    static final ExecutorService databaseWriteExecutor =
-            Executors.newFixedThreadPool(NUMBER_OF_THREADS);
+    static Executor databaseWriteExecutor;
 
-    static TasksDatabase getDatabase(final Context context) {
+    public static TasksDatabase getDatabase(final Context context, Executor executor) {
         if (INSTANCE == null) {
             synchronized (TasksDatabase.class) {
                 if (INSTANCE == null) {
@@ -34,6 +34,8 @@ public abstract class TasksDatabase extends RoomDatabase {
                             TasksDatabase.class, "tasks_database")
                             .addCallback(roomDatabaseCallback)
                             .build();
+
+                    databaseWriteExecutor = executor;
                 }
             }
         }
