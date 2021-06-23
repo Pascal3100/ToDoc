@@ -11,6 +11,7 @@ import java.util.Calendar;
 import java.util.List;
 
 import fr.plopez.todoc.data.model.Project;
+import fr.plopez.todoc.data.model.ProjectWithTasks;
 import fr.plopez.todoc.data.model.Task;
 import fr.plopez.todoc.data.repositories.FilterRepository;
 import fr.plopez.todoc.data.repositories.ProjectsRepository;
@@ -24,11 +25,10 @@ public class TasksViewModel extends ViewModel {
     private final TasksRepository tasksRepository;
     private final FilterRepository filterRepository;
     private final SingleLiveEvent<AddTaskViewAction> addTaskSingleLiveEvent = new SingleLiveEvent<>();
-    private final LiveData<List<Task>> tasksListLiveData;
     private final LiveData<Integer> numberOfTaskLiveData;
     private final LiveData<PossibleSortMethods> sortMethodLiveData;
 
-    private final MediatorLiveData<List<Task>> tasksListMediatorLiveData = new MediatorLiveData<>();
+    private final MediatorLiveData<List<TaskViewState>> projectsWithTasksMediatorLiveData = new MediatorLiveData<>();
 
     public TasksViewModel(@NonNull ProjectsRepository projectsRepository,
                           @NonNull TasksRepository tasksRepository,
@@ -36,14 +36,16 @@ public class TasksViewModel extends ViewModel {
         this.projectsRepository = projectsRepository;
         this.tasksRepository = tasksRepository;
         this.filterRepository = filterRepository;
-        tasksListLiveData = tasksRepository.getTaskListLiveData();
+        LiveData<List<ProjectWithTasks>> projectsWithTasksLiveData = projectsRepository.getProjectsWithTasksLiveData();
         numberOfTaskLiveData = tasksRepository.getNumberOfTaskLiveData();
         sortMethodLiveData = filterRepository.getRequiredSortingMethod();
 
-        tasksListMediatorLiveData.addSource(tasksListLiveData,
-                taskList -> combine(taskList, sortMethodLiveData.getValue()));
-        tasksListMediatorLiveData.addSource(sortMethodLiveData,
-                requiredSortMethod -> combine(tasksListLiveData.getValue(), requiredSortMethod));
+        projectsWithTasksMediatorLiveData.addSource(projectsWithTasksLiveData, projectsWithTasks ->
+            combine(projectsWithTasks, sortMethodLiveData.getValue())
+        );
+        projectsWithTasksMediatorLiveData.addSource(sortMethodLiveData, requiredSortMethod ->
+            combine(projectsWithTasksLiveData.getValue(), requiredSortMethod)
+        );
 
         // For a Dev purpose only
 //        if (numberOfTaskLiveData.getValue() == 0) {
@@ -54,10 +56,11 @@ public class TasksViewModel extends ViewModel {
 //        }
     }
 
-    private void combine(List<Task> taskList, PossibleSortMethods sortMethod){
-        List<Task> tasks;
-        tasks = TasksSorterUtil.sortBy(sortMethod, taskList);
-        tasksListMediatorLiveData.setValue(tasks);
+    private void combine(List<ProjectWithTasks> projectsWithTasks, PossibleSortMethods sortMethod){
+        // TODO Sorting à revoir ! ça fonctionne différemment avec ProjectWithTasks
+//        List<Task> tasks;
+//        tasks = TasksSorterUtil.sortBy(sortMethod, taskList);
+        projectsWithTasksMediatorLiveData.setValue(mapTasksToTasksViewState(projectsWithTasks));
     }
 
     public void addTask(String taskName, String projectName){
@@ -101,10 +104,10 @@ public class TasksViewModel extends ViewModel {
     }
 
     public LiveData<List<TaskViewState>> getTasksListMediatorLiveData(){
-        return Transformations.map(tasksListMediatorLiveData, this::mapTasksToTasksViewState);
+        return projectsWithTasksMediatorLiveData;
     }
 
-    private List<TaskViewState> mapTasksToTasksViewState(List<Task> taskList) {
+    private List<TaskViewState> mapTasksToTasksViewState(List<ProjectWithTasks> projectsWithTasks) {
         List<TaskViewState> taskViewStateList = new ArrayList<>();
         for (Task task : taskList) {
             Project project = projectsRepository.getProjectById(task.getProjectId());
