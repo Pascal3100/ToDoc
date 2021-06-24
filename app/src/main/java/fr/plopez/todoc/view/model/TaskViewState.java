@@ -1,4 +1,4 @@
-package fr.plopez.todoc.view.main;
+package fr.plopez.todoc.view.model;
 
 public class TaskViewState {
 

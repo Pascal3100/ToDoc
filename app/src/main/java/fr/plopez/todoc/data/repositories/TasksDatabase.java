@@ -11,6 +11,8 @@ import androidx.sqlite.db.SupportSQLiteDatabase;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+import fr.plopez.todoc.data.Dao.ProjectsDao;
+import fr.plopez.todoc.data.Dao.TasksDao;
 import fr.plopez.todoc.data.model.Project;
 import fr.plopez.todoc.data.model.Task;
 import fr.plopez.todoc.data.utils.FakeProjectsGenerator;

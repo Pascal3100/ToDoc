@@ -4,12 +4,10 @@ import android.app.Application;
 
 import androidx.annotation.NonNull;
 import androidx.lifecycle.LiveData;
-import androidx.lifecycle.MutableLiveData;
-import androidx.lifecycle.Observer;
 
-import java.util.ArrayList;
 import java.util.List;
 
+import fr.plopez.todoc.data.Dao.TasksDao;
 import fr.plopez.todoc.data.model.Task;
 
 /**

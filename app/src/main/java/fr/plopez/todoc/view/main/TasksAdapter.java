@@ -11,6 +11,7 @@ import androidx.appcompat.widget.AppCompatImageView;
 import androidx.recyclerview.widget.RecyclerView;
 
 import fr.plopez.todoc.R;
+import fr.plopez.todoc.view.model.TaskViewState;
 
 import java.util.ArrayList;
 import java.util.List;

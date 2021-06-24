@@ -22,8 +22,7 @@ public class MainActivityFragment extends Fragment implements DeleteTaskListener
 
     private final DeleteTaskListener deleteTaskListener = this;
     private ActivityMainFragmentBinding mainActivityFragmentBinding;
-    private final List<String> projectListForDialog = new ArrayList<>();
-    private TasksViewModel tasksViewModel;
+    private MainActivityViewModel mainActivityViewModel;
     private ListenerShowAddTaskMenu listenerShowAddTaskMenu;
 
 
@@ -55,10 +54,10 @@ public class MainActivityFragment extends Fragment implements DeleteTaskListener
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        tasksViewModel = new ViewModelProvider(
+        mainActivityViewModel = new ViewModelProvider(
                 this,
                 ViewModelFactory.getInstance())
-                .get(TasksViewModel.class);
+                .get(MainActivityViewModel.class);
     }
 
     @Nullable
@@ -73,9 +72,9 @@ public class MainActivityFragment extends Fragment implements DeleteTaskListener
         mainActivityFragmentBinding.listTasks.setLayoutManager(new LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false));
         mainActivityFragmentBinding.listTasks.setAdapter(tasksAdapter);
 
-        tasksViewModel.getTasksListMediatorLiveData().observe(getViewLifecycleOwner(), tasksAdapter::updateTasks);
+        mainActivityViewModel.getTasksListMediatorLiveData().observe(getViewLifecycleOwner(), tasksAdapter::updateTasks);
 
-        tasksViewModel.getNumberOfTaskLiveData().observe(getViewLifecycleOwner(), numberOfTasks -> {
+        mainActivityViewModel.getNumberOfTaskLiveData().observe(getViewLifecycleOwner(), numberOfTasks -> {
             if (numberOfTasks == 0) {
                 mainActivityFragmentBinding.listTasks.setVisibility(View.GONE);
                 mainActivityFragmentBinding.lblNoTask.setVisibility(View.VISIBLE);
@@ -87,17 +86,12 @@ public class MainActivityFragment extends Fragment implements DeleteTaskListener
 
         mainActivityFragmentBinding.fabAddTask.setOnClickListener(v -> listenerShowAddTaskMenu.showAddTaskMenu());
 
-        tasksViewModel.getProjectListLiveData().observe(getViewLifecycleOwner(), strings -> {
-            projectListForDialog.clear();
-            projectListForDialog.addAll(strings);
-        });
-
         // Inflate the layout for this fragment
         return view;
     }
 
     @Override
     public void onDeleteTask(long taskIdToDelete) {
-        tasksViewModel.deleteTask(taskIdToDelete);
+        mainActivityViewModel.deleteTask(taskIdToDelete);
     }
 }

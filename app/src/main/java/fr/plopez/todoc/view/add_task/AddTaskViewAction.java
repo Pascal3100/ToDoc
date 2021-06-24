@@ -1,4 +1,4 @@
-package fr.plopez.todoc.view.main;
+package fr.plopez.todoc.view.add_task;
 
 import androidx.annotation.Nullable;
 

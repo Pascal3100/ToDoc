@@ -8,7 +8,8 @@ import fr.plopez.todoc.data.repositories.FilterRepository;
 import fr.plopez.todoc.data.repositories.ProjectsRepository;
 import fr.plopez.todoc.data.repositories.TasksRepository;
 import fr.plopez.todoc.utils.App;
-import fr.plopez.todoc.view.main.TasksViewModel;
+import fr.plopez.todoc.view.add_task.AddTaskViewModel;
+import fr.plopez.todoc.view.main.MainActivityViewModel;
 
 public class ViewModelFactory implements ViewModelProvider.Factory {
 
@@ -32,8 +33,10 @@ public class ViewModelFactory implements ViewModelProvider.Factory {
     @NonNull
     @Override
     public <T extends ViewModel> T create(@NonNull Class<T> modelClass) {
-        if (modelClass.isAssignableFrom(TasksViewModel.class)) {
-            return (T) new TasksViewModel(projectsRepository, tasksRepository, filterRepository);
+        if (modelClass.isAssignableFrom(MainActivityViewModel.class)) {
+            return (T) new MainActivityViewModel(projectsRepository, tasksRepository, filterRepository);
+        } else if (modelClass.isAssignableFrom(AddTaskViewModel.class)) {
+            return (T) new AddTaskViewModel(projectsRepository, tasksRepository);
         }
         throw new IllegalArgumentException("Unknown ViewModel class");
     }

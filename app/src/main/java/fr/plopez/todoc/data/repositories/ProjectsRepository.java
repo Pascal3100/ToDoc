@@ -4,13 +4,11 @@ import android.app.Application;
 
 import androidx.annotation.Nullable;
 import androidx.lifecycle.LiveData;
-import androidx.lifecycle.MutableLiveData;
 
-import java.util.ArrayList;
 import java.util.List;
 
+import fr.plopez.todoc.data.Dao.ProjectsDao;
 import fr.plopez.todoc.data.model.Project;
-import fr.plopez.todoc.data.utils.FakeProjectsGenerator;
 
 /**
  * <p>Project Repository to hold available projects</p>

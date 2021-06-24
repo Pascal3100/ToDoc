@@ -19,16 +19,16 @@ import fr.plopez.todoc.data.model.Task;
 import fr.plopez.todoc.data.repositories.FilterRepository;
 import fr.plopez.todoc.data.repositories.ProjectsRepository;
 import fr.plopez.todoc.data.repositories.TasksRepository;
-import fr.plopez.todoc.view.main.AddTaskViewAction;
+import fr.plopez.todoc.view.add_task.AddTaskViewAction;
 import fr.plopez.todoc.view.main.PossibleSortMethods;
-import fr.plopez.todoc.view.main.TasksViewModel;
+import fr.plopez.todoc.view.main.MainActivityViewModel;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.times;
 
 
 @RunWith(MockitoJUnitRunner.class)
-public class TasksViewModelTest {
+public class MainActivityViewModelTest {
 
     // Constants
     private final String AA_TASK_NAME = "AA_TASK";
@@ -65,25 +65,25 @@ public class TasksViewModelTest {
     // Class variables
     private final MutableLiveData<List<Task>> taskListMutableLiveData = new MutableLiveData<>();
     private final MutableLiveData<PossibleSortMethods> sortMethodMutableLiveData = new MutableLiveData<>();
-    private TasksViewModel tasksViewModel;
+    private MainActivityViewModel mainActivityViewModel;
 
     @Before
     public void setUp() {
         wireUpProjectsRepositoryMock();
         wireUpTasksRepositoryMock();
         wireUpFilterRepositoryMock();
-        tasksViewModel = new TasksViewModel(projectsRepositoryMock, tasksRepositoryMock, filterRepositoryMock);
+        mainActivityViewModel = new MainActivityViewModel(projectsRepositoryMock, tasksRepositoryMock, filterRepositoryMock);
     }
 
     // Verify tasks are correctly added
     @Test
     public void add_task_nominal_test() throws InterruptedException {
         // Given
-        tasksViewModel.addTask(NEW_TASK_NAME, GOOD_PROJECT_NAME);
+        mainActivityViewModel.addTask(NEW_TASK_NAME, GOOD_PROJECT_NAME);
 
         // When
         AddTaskViewAction resultErrorMessage = LiveDataTestUtils
-                .getOrAwaitValue(tasksViewModel.getAddTaskSingleLiveEvent());
+                .getOrAwaitValue(mainActivityViewModel.getAddTaskSingleLiveEvent());
 
         // Then
         assertEquals(AddTaskViewAction.TASK_OK, resultErrorMessage);
@@ -94,11 +94,11 @@ public class TasksViewModelTest {
     @Test
     public void add_task_errors_null_both_input_test() throws InterruptedException {
         // Given
-        tasksViewModel.addTask(NULL_TASK_NAME, NULL_PROJECT_NAME);
+        mainActivityViewModel.addTask(NULL_TASK_NAME, NULL_PROJECT_NAME);
 
         // When
         AddTaskViewAction resultErrorMessage = LiveDataTestUtils
-                .getOrAwaitValue(tasksViewModel.getAddTaskSingleLiveEvent());
+                .getOrAwaitValue(mainActivityViewModel.getAddTaskSingleLiveEvent());
 
         // Then
         assertEquals(AddTaskViewAction.DISPLAY_TASK_EMPTY_MESSAGE, resultErrorMessage);
@@ -109,11 +109,11 @@ public class TasksViewModelTest {
     @Test
     public void add_task_errors_null_task_input_test() throws InterruptedException {
         // Given
-        tasksViewModel.addTask(NULL_TASK_NAME, GOOD_PROJECT_NAME);
+        mainActivityViewModel.addTask(NULL_TASK_NAME, GOOD_PROJECT_NAME);
 
         // When
         AddTaskViewAction resultErrorMessage = LiveDataTestUtils
-                .getOrAwaitValue(tasksViewModel.getAddTaskSingleLiveEvent());
+                .getOrAwaitValue(mainActivityViewModel.getAddTaskSingleLiveEvent());
 
         // Then
         assertEquals(AddTaskViewAction.DISPLAY_TASK_EMPTY_MESSAGE, resultErrorMessage);
@@ -124,11 +124,11 @@ public class TasksViewModelTest {
     @Test
     public void add_task_errors_empty_task_input_test() throws InterruptedException {
         // Given
-        tasksViewModel.addTask(EMPTY_TASK_NAME, GOOD_PROJECT_NAME);
+        mainActivityViewModel.addTask(EMPTY_TASK_NAME, GOOD_PROJECT_NAME);
 
         // When
         AddTaskViewAction resultErrorMessage = LiveDataTestUtils
-                .getOrAwaitValue(tasksViewModel.getAddTaskSingleLiveEvent());
+                .getOrAwaitValue(mainActivityViewModel.getAddTaskSingleLiveEvent());
 
         // Then
         assertEquals(AddTaskViewAction.DISPLAY_TASK_EMPTY_MESSAGE, resultErrorMessage);
@@ -139,11 +139,11 @@ public class TasksViewModelTest {
     @Test
     public void add_task_errors_null_project_input_test() throws InterruptedException {
         // Given
-        tasksViewModel.addTask(TASK_NAME, NULL_PROJECT_NAME);
+        mainActivityViewModel.addTask(TASK_NAME, NULL_PROJECT_NAME);
 
         // When
         AddTaskViewAction resultErrorMessage = LiveDataTestUtils
-                .getOrAwaitValue(tasksViewModel.getAddTaskSingleLiveEvent());
+                .getOrAwaitValue(mainActivityViewModel.getAddTaskSingleLiveEvent());
 
         // Then
         assertEquals(AddTaskViewAction.DISPLAY_PROJECT_EMPTY_MESSAGE, resultErrorMessage);
@@ -156,7 +156,7 @@ public class TasksViewModelTest {
         long SUPER_LONG_ID = 1000000101010L;
 
         // When
-        tasksViewModel.deleteTask(SUPER_LONG_ID);
+        mainActivityViewModel.deleteTask(SUPER_LONG_ID);
 
         // Then
         Mockito.verify(tasksRepositoryMock, times(1)).deleteTask(SUPER_LONG_ID);
@@ -170,7 +170,7 @@ public class TasksViewModelTest {
 
         // When
         List<Task> result = LiveDataTestUtils
-                .getOrAwaitValue(tasksViewModel.getTasksListMediatorLiveData());
+                .getOrAwaitValue(mainActivityViewModel.getTasksListMediatorLiveData());
 
         // Then
         assertEquals(ZZ_TASK, result.get(0));
@@ -186,7 +186,7 @@ public class TasksViewModelTest {
 
         // When
         List<Task> result = LiveDataTestUtils
-                .getOrAwaitValue(tasksViewModel.getTasksListMediatorLiveData());
+                .getOrAwaitValue(mainActivityViewModel.getTasksListMediatorLiveData());
 
         // Then
         assertEquals(AA_TASK, result.get(0));
@@ -202,7 +202,7 @@ public class TasksViewModelTest {
 
         // When
         List<Task> result = LiveDataTestUtils
-                .getOrAwaitValue(tasksViewModel.getTasksListMediatorLiveData());
+                .getOrAwaitValue(mainActivityViewModel.getTasksListMediatorLiveData());
 
         // Then
         assertEquals(AA_TASK, result.get(0));
@@ -218,7 +218,7 @@ public class TasksViewModelTest {
 
         // When
         List<Task> result = LiveDataTestUtils
-                .getOrAwaitValue(tasksViewModel.getTasksListMediatorLiveData());
+                .getOrAwaitValue(mainActivityViewModel.getTasksListMediatorLiveData());
 
         // Then
         assertEquals(ZZ_TASK, result.get(0));

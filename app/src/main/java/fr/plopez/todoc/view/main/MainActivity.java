@@ -10,6 +10,7 @@ import androidx.lifecycle.ViewModelProvider;
 
 import fr.plopez.todoc.R;
 import fr.plopez.todoc.ViewModelFactory;
+import fr.plopez.todoc.view.add_task.AddTaskDialogFragment;
 
 /**
  * <p>Home activity of the application which is displayed when the user opens the app.</p>
@@ -41,12 +42,12 @@ public class MainActivity extends AppCompatActivity implements ListenerShowAddTa
             requiredSortingMethod = PossibleSortMethods.RECENT_FIRST;
         }
 
-        TasksViewModel tasksViewModel = new ViewModelProvider(
+        MainActivityViewModel mainActivityViewModel = new ViewModelProvider(
                 this,
                 ViewModelFactory.getInstance())
-                .get(TasksViewModel.class);
+                .get(MainActivityViewModel.class);
 
-        tasksViewModel.setSortingMethod(requiredSortingMethod);
+        mainActivityViewModel.setSortingMethod(requiredSortingMethod);
 
         return super.onOptionsItemSelected(item);
     }

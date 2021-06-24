@@ -1,4 +1,4 @@
-package fr.plopez.todoc.view.main;
+package fr.plopez.todoc.view.add_task;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -30,10 +30,10 @@ public class AddTaskDialogFragment extends DialogFragment {
                              @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
 
-        TasksViewModel tasksViewModel = new ViewModelProvider(
+        AddTaskViewModel addTaskViewModel = new ViewModelProvider(
                 this,
                 ViewModelFactory.getInstance())
-                .get(TasksViewModel.class);
+                .get(AddTaskViewModel.class);
 
         dialogFragmentAddTaskBinding = DialogFragmentAddTaskBinding.inflate(getLayoutInflater());
 
@@ -49,7 +49,7 @@ public class AddTaskDialogFragment extends DialogFragment {
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         dialogFragmentAddTaskBinding.projectSpinner.setAdapter(adapter);
 
-        tasksViewModel.getProjectListLiveData().observe(this, projectsNamesList -> {
+        addTaskViewModel.getProjectListLiveData().observe(this, projectsNamesList -> {
             adapter.clear();
             adapter.addAll(projectsNamesList);
             adapter.notifyDataSetChanged();
@@ -61,21 +61,19 @@ public class AddTaskDialogFragment extends DialogFragment {
                 spinnerContent = dialogFragmentAddTaskBinding.projectSpinner.getSelectedItem().toString();
             }
 
-            tasksViewModel.addTask(
+            addTaskViewModel.addTask(
                     dialogFragmentAddTaskBinding.txtTaskName.getText().toString(),
                     spinnerContent
             );
         });
 
-        tasksViewModel.getAddTaskSingleLiveEvent().observe(this, viewAction -> {
+        addTaskViewModel.getAddTaskSingleLiveEvent().observe(this, viewAction -> {
             if (viewAction != AddTaskViewAction.TASK_OK){
                 showSnackBarWarning(viewAction.getMessage());
             } else {
                 dismiss();
             }
         });
-
-
 
         return dialogFragmentAddTaskBinding.getRoot();
     }

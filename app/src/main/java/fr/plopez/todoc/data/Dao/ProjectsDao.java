@@ -1,4 +1,4 @@
-package fr.plopez.todoc.data.repositories;
+package fr.plopez.todoc.data.Dao;
 
 import androidx.lifecycle.LiveData;
 import androidx.room.Dao;
