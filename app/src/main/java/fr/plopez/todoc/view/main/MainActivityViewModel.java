@@ -12,6 +12,7 @@ import java.util.List;
 
 import fr.plopez.todoc.data.model.Project;
 import fr.plopez.todoc.data.model.Task;
+import fr.plopez.todoc.data.relations.ProjectWithTasks;
 import fr.plopez.todoc.data.repositories.FilterRepository;
 import fr.plopez.todoc.data.repositories.ProjectsRepository;
 import fr.plopez.todoc.data.repositories.TasksRepository;
@@ -25,11 +26,13 @@ public class MainActivityViewModel extends ViewModel {
     private final ProjectsRepository projectsRepository;
     private final TasksRepository tasksRepository;
     private final FilterRepository filterRepository;
-    private final LiveData<List<Task>> tasksListLiveData;
     private final LiveData<Integer> numberOfTaskLiveData;
     private final LiveData<PossibleSortMethods> sortMethodLiveData;
 
-    private final MediatorLiveData<List<Task>> tasksListMediatorLiveData = new MediatorLiveData<>();
+//    private final LiveData<List<Task>> tasksListLiveData;
+//    private final MediatorLiveData<List<Task>> tasksListMediatorLiveData = new MediatorLiveData<>();
+    private final MediatorLiveData<List<TaskViewState>> projectsWithTasksMediatorLiveData = new MediatorLiveData<>();
+
 
     public MainActivityViewModel(@NonNull ProjectsRepository projectsRepository,
                                  @NonNull TasksRepository tasksRepository,
@@ -37,20 +40,32 @@ public class MainActivityViewModel extends ViewModel {
         this.projectsRepository = projectsRepository;
         this.tasksRepository = tasksRepository;
         this.filterRepository = filterRepository;
-        tasksListLiveData = tasksRepository.getTaskListLiveData();
+
+//        tasksListLiveData = tasksRepository.getTaskListLiveData();
+        LiveData<List<ProjectWithTasks>> projectsWithTasksLiveData =
+                projectsRepository.getProjectWithTasksLiveData();
+
+        // TODO : A virer!!
         numberOfTaskLiveData = tasksRepository.getNumberOfTaskLiveData();
+
         sortMethodLiveData = filterRepository.getRequiredSortingMethod();
 
-        tasksListMediatorLiveData.addSource(tasksListLiveData,
-                taskList -> combine(taskList, sortMethodLiveData.getValue()));
-        tasksListMediatorLiveData.addSource(sortMethodLiveData,
-                requiredSortMethod -> combine(tasksListLiveData.getValue(), requiredSortMethod));
+        // Setting up MediatorLiveData
+        projectsWithTasksMediatorLiveData.addSource(projectsWithTasksLiveData, projectsWithTasks ->
+                combine(projectsWithTasks, sortMethodLiveData.getValue())
+        );
+        projectsWithTasksMediatorLiveData.addSource(sortMethodLiveData,
+                requiredSortMethod -> combine(projectsWithTasksLiveData.getValue(), requiredSortMethod)
+        );
     }
 
-    private void combine(List<Task> taskList, PossibleSortMethods sortMethod){
-        List<Task> tasks;
-        tasks = TasksSorterUtil.sortBy(sortMethod, taskList);
-        tasksListMediatorLiveData.setValue(tasks);
+    private void combine(List<ProjectWithTasks> projectWithTasksList, PossibleSortMethods sortMethod){
+
+        List<TaskViewState> taskViewStateList = mapTasksToTasksViewState(projectWithTasksList);
+
+        projectsWithTasksMediatorLiveData.setValue(
+                TasksSorterUtil.sortBy(sortMethod, taskViewStateList)
+        );
     }
 
     public void deleteTask(long taskId){
@@ -58,19 +73,28 @@ public class MainActivityViewModel extends ViewModel {
     }
 
     public LiveData<List<TaskViewState>> getTasksListMediatorLiveData(){
-        return Transformations.map(tasksListMediatorLiveData, this::mapTasksToTasksViewState);
+        return projectsWithTasksMediatorLiveData;
     }
 
-    private List<TaskViewState> mapTasksToTasksViewState(List<Task> taskList) {
+    // Transforms ProjectWithTasks objects into TaskViewState objects
+    private List<TaskViewState> mapTasksToTasksViewState(List<ProjectWithTasks> projectWithTaskList) {
+
         List<TaskViewState> taskViewStateList = new ArrayList<>();
-        for (Task task : taskList) {
-            Project project = projectsRepository.getProjectById(task.getProjectId());
-            taskViewStateList.add(new TaskViewState(
-                    task.getId(),
-                    task.getName(),
-                    project.getColor(),
-                    project.getName()));
+        if (projectWithTaskList != null) {
+            Project project;
+
+            for (ProjectWithTasks projectWithTasks : projectWithTaskList) {
+                project = projectWithTasks.getProject();
+                for (Task task : projectWithTasks.getTasks()) {
+                    taskViewStateList.add(new TaskViewState(
+                            task.getId(),
+                            task.getName(),
+                            project.getColor(),
+                            project.getName()));
+                }
+            }
         }
+
         return taskViewStateList;
     }
 

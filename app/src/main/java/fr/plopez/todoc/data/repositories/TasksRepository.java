@@ -6,6 +6,7 @@ import androidx.annotation.NonNull;
 import androidx.lifecycle.LiveData;
 
 import java.util.List;
+import java.util.concurrent.Executor;
 
 import fr.plopez.todoc.data.Dao.TasksDao;
 import fr.plopez.todoc.data.model.Task;
@@ -20,14 +21,15 @@ public class TasksRepository {
     private final LiveData<List<Task>> taskListLiveData;
     private final LiveData<Integer> numberOfTaskLiveData;
     private final TasksDao tasksDao;
+    private final Executor ioExecutor;
 
     /**
      * Instantiates a new TasksRepository.
      *
      */
-    public TasksRepository(Application application){
-        TasksDatabase database = TasksDatabase.getDatabase(application);
-        tasksDao = database.tasksDao();
+    public TasksRepository(@NonNull TasksDao tasksDao, @NonNull Executor ioExecutor){
+        this.tasksDao = tasksDao;
+        this.ioExecutor = ioExecutor;
         taskListLiveData = tasksDao.getAllTasks();
         numberOfTaskLiveData = tasksDao.getNumberOfTasks();
     }
@@ -55,7 +57,7 @@ public class TasksRepository {
      *
      */
     public void addTask(@NonNull Task newTask){
-        TasksDatabase.databaseWriteExecutor.execute(new Runnable() {
+        ioExecutor.execute(new Runnable() {
             @Override
             public void run() {
                 tasksDao.insertTask(newTask);
@@ -67,7 +69,7 @@ public class TasksRepository {
      *
      */
     public void deleteTask(long taskIdToDelete){
-        TasksDatabase.databaseWriteExecutor.execute(new Runnable() {
+        ioExecutor.execute(new Runnable() {
             @Override
             public void run() {
                 tasksDao.deleteTask(taskIdToDelete);

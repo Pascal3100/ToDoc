@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 
 import androidx.annotation.NonNull;
@@ -30,14 +31,46 @@ public class AddTaskDialogFragment extends DialogFragment {
                              @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
 
+        // Getting instance of viewModel
         AddTaskViewModel addTaskViewModel = new ViewModelProvider(
                 this,
                 ViewModelFactory.getInstance())
                 .get(AddTaskViewModel.class);
 
+        // Inflate Fragment and get viewBinding object
         dialogFragmentAddTaskBinding = DialogFragmentAddTaskBinding.inflate(getLayoutInflater());
 
+        // Setting up the spinner
+        spinnerSetup(addTaskViewModel);
 
+        // Setting up the button to add the task
+        dialogFragmentAddTaskBinding.addTaskButton.setOnClickListener(view1 -> {
+            addTaskViewModel.setTaskSubject(dialogFragmentAddTaskBinding.txtTaskName.getText().toString());
+            addTaskViewModel.addTask();
+        });
+
+        // Manage the events to notify the user on errors
+        addTaskViewModel.getAddTaskSingleLiveEvent().observe(this, viewAction -> {
+            if (viewAction != AddTaskViewAction.TASK_OK){
+                showSnackBarWarning(viewAction.getMessage());
+            } else {
+                dismiss();
+            }
+        });
+
+        addTaskViewModel.getTaskGenMediatorLiveData().observe(this, aBoolean -> {
+            // Nothing to do, just observe to activate it
+            // but could disable the add button for example
+        });
+
+        // returning view
+        return dialogFragmentAddTaskBinding.getRoot();
+    }
+
+    // Setting up the spinner
+    private void spinnerSetup(AddTaskViewModel addTaskViewModel) {
+        // Setting up the spinner
+        // -- setting up the adapter
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(requireContext(), android.R.layout.simple_spinner_item){
             @Override
             public boolean isEnabled(int position) {
@@ -49,33 +82,27 @@ public class AddTaskDialogFragment extends DialogFragment {
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         dialogFragmentAddTaskBinding.projectSpinner.setAdapter(adapter);
 
+        // -- Notify viewModel each time a project is selected
+        dialogFragmentAddTaskBinding.projectSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                addTaskViewModel.setSelectedProject(
+                        dialogFragmentAddTaskBinding.projectSpinner.getSelectedItem().toString()
+                );
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> adapterView) {
+
+            }
+        });
+
+        // -- Filling the spinner by observing project list
         addTaskViewModel.getProjectListLiveData().observe(this, projectsNamesList -> {
             adapter.clear();
             adapter.addAll(projectsNamesList);
             adapter.notifyDataSetChanged();
         });
-
-        dialogFragmentAddTaskBinding.addTaskButton.setOnClickListener(view1 -> {
-            String spinnerContent = null;
-            if (dialogFragmentAddTaskBinding.projectSpinner.getSelectedItem() != null) {
-                spinnerContent = dialogFragmentAddTaskBinding.projectSpinner.getSelectedItem().toString();
-            }
-
-            addTaskViewModel.addTask(
-                    dialogFragmentAddTaskBinding.txtTaskName.getText().toString(),
-                    spinnerContent
-            );
-        });
-
-        addTaskViewModel.getAddTaskSingleLiveEvent().observe(this, viewAction -> {
-            if (viewAction != AddTaskViewAction.TASK_OK){
-                showSnackBarWarning(viewAction.getMessage());
-            } else {
-                dismiss();
-            }
-        });
-
-        return dialogFragmentAddTaskBinding.getRoot();
     }
 
     private void showSnackBarWarning(String message) {

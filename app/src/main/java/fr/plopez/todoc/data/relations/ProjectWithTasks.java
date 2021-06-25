@@ -12,24 +12,28 @@ import fr.plopez.todoc.data.model.Task;
 
 public class ProjectWithTasks {
     @Embedded
-    private final Project project;
+    private Project project;
 
     @Relation(
             parentColumn = "project_id",
             entityColumn = "project_id"
     )
-    private final List<Task> tasks;
+    private List<Task> tasks;
 
-    public ProjectWithTasks(Project project, List<Task> tasks) {
-        this.project = project;
-        this.tasks = tasks;
-    }
     public Project getProject() {
         return project;
     }
 
     public List<Task> getTasks() {
         return tasks;
+    }
+
+    public void setProject(Project project) {
+        this.project = project;
+    }
+
+    public void setTasks(List<Task> tasks) {
+        this.tasks = tasks;
     }
 
     @Override

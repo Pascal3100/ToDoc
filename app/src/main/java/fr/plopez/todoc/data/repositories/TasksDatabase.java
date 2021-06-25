@@ -8,6 +8,7 @@ import androidx.room.Room;
 import androidx.room.RoomDatabase;
 import androidx.sqlite.db.SupportSQLiteDatabase;
 
+import java.util.concurrent.Executor;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -24,11 +25,9 @@ public abstract class TasksDatabase extends RoomDatabase {
     public abstract ProjectsDao projectsDao();
 
     private static volatile TasksDatabase INSTANCE;
-    private static final int NUMBER_OF_THREADS = 4;
-    static final ExecutorService databaseWriteExecutor =
-            Executors.newFixedThreadPool(NUMBER_OF_THREADS);
+    static Executor ioExecutor;
 
-    static TasksDatabase getDatabase(final Context context) {
+    public static TasksDatabase getDatabase(final Context context, Executor executor) {
         if (INSTANCE == null) {
             synchronized (TasksDatabase.class) {
                 if (INSTANCE == null) {
@@ -36,6 +35,7 @@ public abstract class TasksDatabase extends RoomDatabase {
                             TasksDatabase.class, "tasks_database")
                             .addCallback(roomDatabaseCallback)
                             .build();
+                    ioExecutor = executor;
                 }
             }
         }
@@ -49,7 +49,7 @@ public abstract class TasksDatabase extends RoomDatabase {
             super.onCreate(db);
             // If you want to keep data through app restarts,
             // comment out the following block
-            databaseWriteExecutor.execute(() -> {
+            ioExecutor.execute(() -> {
                 // Populate the database in the background.
                 // If you want to start with more words, just add them.
                 ProjectsDao dao = INSTANCE.projectsDao();
