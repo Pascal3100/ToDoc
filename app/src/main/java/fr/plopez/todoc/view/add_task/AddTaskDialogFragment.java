@@ -1,6 +1,8 @@
 package fr.plopez.todoc.view.add_task;
 
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -43,10 +45,22 @@ public class AddTaskDialogFragment extends DialogFragment {
         // Setting up the spinner
         spinnerSetup(addTaskViewModel);
 
+        dialogFragmentAddTaskBinding.txtTaskName.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) { }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) { }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                addTaskViewModel.onTaskTextChanged(s.toString());
+            }
+        });
+
         // Setting up the button to add the task
-        dialogFragmentAddTaskBinding.addTaskButton.setOnClickListener(view1 -> {
-            addTaskViewModel.setTaskSubject(dialogFragmentAddTaskBinding.txtTaskName.getText().toString());
-            addTaskViewModel.addTask();
+        dialogFragmentAddTaskBinding.addTaskButton.setOnClickListener(button -> {
+            addTaskViewModel.onAddTaskButtonClicked();
         });
 
         // Manage the events to notify the user on errors
@@ -58,11 +72,6 @@ public class AddTaskDialogFragment extends DialogFragment {
             }
         });
 
-        addTaskViewModel.getTaskGenMediatorLiveData().observe(this, aBoolean -> {
-            // Nothing to do, just observe to activate it
-            // but could disable the add button for example
-        });
-
         // returning view
         return dialogFragmentAddTaskBinding.getRoot();
     }
@@ -71,7 +80,7 @@ public class AddTaskDialogFragment extends DialogFragment {
     private void spinnerSetup(AddTaskViewModel addTaskViewModel) {
         // Setting up the spinner
         // -- setting up the adapter
-        ArrayAdapter<String> adapter = new ArrayAdapter<String>(requireContext(), android.R.layout.simple_spinner_item){
+        ArrayAdapter<AddTaskViewState> adapter = new ArrayAdapter<AddTaskViewState>(requireContext(), android.R.layout.simple_spinner_item){
             @Override
             public boolean isEnabled(int position) {
                 // Disable the first item from Spinner
@@ -85,9 +94,9 @@ public class AddTaskDialogFragment extends DialogFragment {
         // -- Notify viewModel each time a project is selected
         dialogFragmentAddTaskBinding.projectSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
-            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-                addTaskViewModel.setSelectedProject(
-                        dialogFragmentAddTaskBinding.projectSpinner.getSelectedItem().toString()
+            public void onItemSelected(AdapterView<?>  parent, View view, int position, long id) {
+                addTaskViewModel.onProjectIdSelected(
+                    ((AddTaskViewState) dialogFragmentAddTaskBinding.projectSpinner.getSelectedItem()).getProjectId()
                 );
             }
 
