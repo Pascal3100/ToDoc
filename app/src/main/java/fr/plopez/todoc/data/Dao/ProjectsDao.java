@@ -2,7 +2,6 @@ package fr.plopez.todoc.data.Dao;
 
 import androidx.lifecycle.LiveData;
 import androidx.room.Dao;
-import androidx.room.Delete;
 import androidx.room.Insert;
 import androidx.room.OnConflictStrategy;
 import androidx.room.Query;
@@ -20,10 +19,6 @@ public interface ProjectsDao {
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     void insertProject(Project project);
 
-    // Delete an existing project
-    @Delete
-    void deleteProject(Project project);
-
     // Query for getting all projects
     @Query("SELECT * FROM project")
     LiveData<List<Project>> getAllProjects();
@@ -32,6 +27,7 @@ public interface ProjectsDao {
     @Query("DELETE FROM project")
     void deleteAllProjects();
 
+    // Query for requesting all projects
     @Transaction
     @Query("SELECT * FROM project")
     LiveData<List<ProjectWithTasks>> getAllProjectsWithTasks();

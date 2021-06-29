@@ -59,9 +59,8 @@ public class AddTaskDialogFragment extends DialogFragment {
         });
 
         // Setting up the button to add the task
-        dialogFragmentAddTaskBinding.addTaskButton.setOnClickListener(button -> {
-            addTaskViewModel.onAddTaskButtonClicked();
-        });
+        dialogFragmentAddTaskBinding.addTaskButton.setOnClickListener(button ->
+                addTaskViewModel.onAddTaskButtonClicked());
 
         // Manage the events to notify the user on errors
         addTaskViewModel.getAddTaskSingleLiveEvent().observe(this, viewAction -> {

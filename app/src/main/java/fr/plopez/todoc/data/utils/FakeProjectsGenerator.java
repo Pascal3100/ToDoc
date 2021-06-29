@@ -13,7 +13,6 @@ public class FakeProjectsGenerator {
 
     public List<Project> generateFakeProjects(){
         return Arrays.asList(
-                // TODO : extract string and colors to resources?
                 new Project("Awesome Project", 0xFFEADAD1),
                 new Project("Miraculous Actions", 0xFFB4CDBA),
                 new Project("Circus Project", 0xFFA3CED2)

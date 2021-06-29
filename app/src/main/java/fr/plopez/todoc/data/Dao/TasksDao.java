@@ -24,9 +24,4 @@ public interface TasksDao {
     // Query for getting all tasks
     @Query("SELECT * FROM task")
     LiveData<List<Task>> getAllTasks();
-
-
-    // Query for getting all tasks
-    @Query("SELECT * FROM task")
-    LiveData<List<Task>> getAllTasksSortedByBlabla();
 }

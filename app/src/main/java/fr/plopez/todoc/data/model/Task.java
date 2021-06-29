@@ -28,8 +28,6 @@ public class Task {
     @ColumnInfo(name = "time_stamp")
     private final long creationTimestamp;
 
-
-
     public Task(long projectId, @NonNull String name, long creationTimestamp) {
         this.projectId = projectId;
         this.name = name;

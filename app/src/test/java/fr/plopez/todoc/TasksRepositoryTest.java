@@ -1,5 +1,6 @@
 package fr.plopez.todoc;
 
+import androidx.annotation.NonNull;
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule;
 
 import org.junit.Before;
@@ -29,7 +30,9 @@ public class TasksRepositoryTest {
 
     // Constants
     private final String NEW_TASK_NAME = "NEW_TASK_NAME";
-    private final Task NEW_TASK = new Task(666, NEW_TASK_NAME, 100004);
+    private final long SATANIC_PROJECT_ID = 666;
+
+    private final Task NEW_TASK = new Task(SATANIC_PROJECT_ID, NEW_TASK_NAME, 100004);
 
     // Rules
     @Rule
@@ -55,6 +58,8 @@ public class TasksRepositoryTest {
     @Test
     public void add_Task_test() {
 
+        // Given
+
         // When
         tasksRepository.addTask(NEW_TASK);
 
@@ -63,25 +68,17 @@ public class TasksRepositoryTest {
         Mockito.verify(tasksDaoMock).insertTask(NEW_TASK);
     }
 
-//    // verify that tasks are correctly added
-//    @Test
-//    public void delete_Task_test() throws InterruptedException {
-//        // Given
-//        int resultNumberOfTasks = LiveDataTestUtils
-//                .getOrAwaitValue(tasksRepository.getNumberOfTaskLiveData());
-//        assertEquals(0, resultNumberOfTasks);
-//        tasksRepository.addTask(NEW_TASK);
-//        resultNumberOfTasks = LiveDataTestUtils
-//                .getOrAwaitValue(tasksRepository.getNumberOfTaskLiveData());
-//        assertEquals(1, resultNumberOfTasks);
-//
-//        // When
-//        tasksRepository.deleteTask(NEW_TASK.getId());
-//        resultNumberOfTasks = LiveDataTestUtils
-//                .getOrAwaitValue(tasksRepository.getNumberOfTaskLiveData());
-//
-//        // Then
-//        assertEquals(0, resultNumberOfTasks);
-//
-//    }
+    // verify that tasks are correctly added
+    @Test
+    public void delete_Task_test() throws InterruptedException {
+
+        // Given
+
+        // When
+        tasksRepository.deleteTask(SATANIC_PROJECT_ID);
+
+        // Then
+        Mockito.verify(testExecutor).execute(any());
+        Mockito.verify(tasksDaoMock).deleteTask(SATANIC_PROJECT_ID);
+    }
 }

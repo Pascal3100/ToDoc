@@ -8,4 +8,9 @@
     <color name="ripple_color">#1f000000</color>
     <color name="redPinkish">#D72323</color>
     <color name="whiteGrey">#EEEEEE</color>
+
+    <color name="Awesome_Project_color">#2d4059</color>
+    <color name="Miraculous_Actions_color">#ffb400</color>
+    <color name="Circus_Project_color">#ea5455</color>
+
 </resources>

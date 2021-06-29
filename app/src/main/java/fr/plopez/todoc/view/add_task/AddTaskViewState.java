@@ -19,10 +19,6 @@ public class AddTaskViewState {
         return projectId;
     }
 
-    public String getProjectName() {
-        return projectName;
-    }
-
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -40,9 +36,6 @@ public class AddTaskViewState {
     @NonNull
     @Override
     public String toString() {
-        return "AddTaskViewState{" +
-            "projectId=" + projectId +
-            ", projectName='" + projectName + '\'' +
-            '}';
+        return projectName;
     }
 }

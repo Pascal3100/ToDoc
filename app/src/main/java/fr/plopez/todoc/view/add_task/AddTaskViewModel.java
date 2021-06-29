@@ -52,28 +52,23 @@ public class AddTaskViewModel extends ViewModel {
     }
 
     public void onAddTaskButtonClicked() {
-        boolean hasError = false;
 
         if (taskSubject == null || taskSubject.trim().isEmpty()) {
-            hasError = true;
             addTaskSingleLiveEvent.setValue(AddTaskViewAction.DISPLAY_TASK_EMPTY_MESSAGE);
+            return;
         }
 
-        if (currentlySelectedProjectId == null) {
-            hasError = true;
+        if (currentlySelectedProjectId == null || currentlySelectedProjectId == 0) {
             addTaskSingleLiveEvent.setValue(AddTaskViewAction.DISPLAY_PROJECT_EMPTY_MESSAGE);
-        }
-
-        if (hasError) {
             return;
         }
 
         tasksRepository.addTask(
-            new Task(
-                currentlySelectedProjectId,
-                taskSubject,
-                Calendar.getInstance().getTimeInMillis()
-            )
+                new Task(
+                        currentlySelectedProjectId,
+                        taskSubject,
+                        Calendar.getInstance().getTimeInMillis()
+                )
         );
 
         addTaskSingleLiveEvent.setValue(AddTaskViewAction.TASK_OK);

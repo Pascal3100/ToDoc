@@ -44,29 +44,9 @@ public class MainActivityViewModel extends ViewModel {
         projectsWithTasksMediatorLiveData.addSource(projectsWithTasksLiveData, projectsWithTasks ->
                 combine(projectsWithTasks, sortMethodLiveData.getValue())
         );
-        projectsWithTasksMediatorLiveData.addSource(sortMethodLiveData,
-                requiredSortMethod -> combine(projectsWithTasksLiveData.getValue(), requiredSortMethod)
+        projectsWithTasksMediatorLiveData.addSource(sortMethodLiveData, requiredSortMethod ->
+                combine(projectsWithTasksLiveData.getValue(), requiredSortMethod)
         );
-
-        /*
-                LiveData<List<Task>> tasksLiveData = Transformations.switchMap(filterRepository.getRequiredSortingMethod(), sortingMethod -> {
-            switch (sortingMethod) {
-
-                case ALPHABETICAL:
-                    return tasksDao.getAllTasksSortedByBlabla();
-                case ALPHABETICAL_INVERTED:
-                    break;
-                case RECENT_FIRST:
-                    break;
-                case OLD_FIRST:
-                    break;
-                case BY_PROJECT:
-                    break;
-            }
-
-            return tasksDao.getAllTasks();
-        });
-         */
     }
 
     private void combine(List<ProjectWithTasks> projectWithTasksList, PossibleSortMethods sortMethod){

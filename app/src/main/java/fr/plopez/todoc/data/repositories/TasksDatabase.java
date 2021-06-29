@@ -1,5 +1,6 @@
 package fr.plopez.todoc.data.repositories;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 
 import androidx.annotation.NonNull;
@@ -10,6 +11,7 @@ import androidx.sqlite.db.SupportSQLiteDatabase;
 
 import java.util.concurrent.Executor;
 
+import fr.plopez.todoc.R;
 import fr.plopez.todoc.data.Dao.ProjectsDao;
 import fr.plopez.todoc.data.Dao.TasksDao;
 import fr.plopez.todoc.data.model.Project;
@@ -30,8 +32,31 @@ public abstract class TasksDatabase extends RoomDatabase {
             synchronized (TasksDatabase.class) {
                 if (INSTANCE == null) {
                     INSTANCE = Room.databaseBuilder(context.getApplicationContext(),
-                            TasksDatabase.class, "tasks_database")
-                            .addCallback(roomDatabaseCallback)
+                            TasksDatabase.class, context.getString(R.string.tasks_database))
+                            .addCallback(new Callback(){
+                                @SuppressLint("NewApi")
+                                @Override
+                                public void onCreate(@NonNull SupportSQLiteDatabase db) {
+                                    super.onCreate(db);
+                                    // If you want to keep data through app restarts,
+                                    // comment out the following block
+                                    ioExecutor.execute(() -> {
+                                        // Populate the database in the background.
+                                        // If you want to start with more words, just add them.
+                                        ProjectsDao dao = INSTANCE.projectsDao();
+                                        dao.deleteAllProjects();
+                                        dao.insertProject(new Project(
+                                                context.getString(R.string.Awesome_Project),
+                                                context.getColor(R.color.Awesome_Project_color)));
+                                        dao.insertProject(new Project(
+                                                context.getString(R.string.Miraculous_Actions),
+                                                context.getColor(R.color.Miraculous_Actions_color)));
+                                        dao.insertProject(new Project(
+                                                context.getString(R.string.Circus_Project),
+                                                context.getColor(R.color.Circus_Project_color)));
+                                    });
+                                }
+                            })
                             .build();
                     ioExecutor = executor;
                 }
@@ -39,26 +64,4 @@ public abstract class TasksDatabase extends RoomDatabase {
         }
         return INSTANCE;
     }
-
-    // Build initial db state
-    private final static RoomDatabase.Callback roomDatabaseCallback = new RoomDatabase.Callback() {
-        @Override
-        public void onCreate(@NonNull SupportSQLiteDatabase db) {
-            super.onCreate(db);
-            // If you want to keep data through app restarts,
-            // comment out the following block
-            ioExecutor.execute(() -> {
-                // Populate the database in the background.
-                // If you want to start with more words, just add them.
-                ProjectsDao dao = INSTANCE.projectsDao();
-                dao.deleteAllProjects();
-
-                FakeProjectsGenerator fakeProjectsGenerator = new FakeProjectsGenerator();
-                for (Project project : fakeProjectsGenerator.generateFakeProjects()){
-                    dao.insertProject(project);
-                }
-            });
-        }
-    };
-
 }
