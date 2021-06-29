@@ -38,6 +38,8 @@ public class MainActivity extends AppCompatActivity implements ListenerShowAddTa
             requiredSortingMethod = PossibleSortMethods.OLD_FIRST;
         } else if (id == R.id.filter_recent_first) {
             requiredSortingMethod = PossibleSortMethods.RECENT_FIRST;
+        } else if (id == R.id.filter_by_project) {
+            requiredSortingMethod = PossibleSortMethods.BY_PROJECT;
         } else {
             requiredSortingMethod = PossibleSortMethods.RECENT_FIRST;
         }

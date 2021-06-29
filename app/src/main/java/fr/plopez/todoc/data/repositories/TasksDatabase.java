@@ -9,8 +9,6 @@ import androidx.room.RoomDatabase;
 import androidx.sqlite.db.SupportSQLiteDatabase;
 
 import java.util.concurrent.Executor;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 import fr.plopez.todoc.data.Dao.ProjectsDao;
 import fr.plopez.todoc.data.Dao.TasksDao;

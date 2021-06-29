@@ -3,11 +3,10 @@ package fr.plopez.todoc.view.main;
 import androidx.annotation.NonNull;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MediatorLiveData;
-import androidx.lifecycle.Transformations;
+import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.List;
 
 import fr.plopez.todoc.data.model.Project;
@@ -17,36 +16,27 @@ import fr.plopez.todoc.data.repositories.FilterRepository;
 import fr.plopez.todoc.data.repositories.ProjectsRepository;
 import fr.plopez.todoc.data.repositories.TasksRepository;
 import fr.plopez.todoc.data.utils.TasksSorterUtil;
-import fr.plopez.todoc.utils.SingleLiveEvent;
-import fr.plopez.todoc.view.add_task.AddTaskViewAction;
 import fr.plopez.todoc.view.model.TaskViewState;
 
 public class MainActivityViewModel extends ViewModel {
 
-    private final ProjectsRepository projectsRepository;
     private final TasksRepository tasksRepository;
     private final FilterRepository filterRepository;
-    private final LiveData<Integer> numberOfTaskLiveData;
+    private final MutableLiveData<Boolean> isThereSomeTasks = new MutableLiveData<>(false);
     private final LiveData<PossibleSortMethods> sortMethodLiveData;
 
-//    private final LiveData<List<Task>> tasksListLiveData;
-//    private final MediatorLiveData<List<Task>> tasksListMediatorLiveData = new MediatorLiveData<>();
-    private final MediatorLiveData<List<TaskViewState>> projectsWithTasksMediatorLiveData = new MediatorLiveData<>();
+    private final MediatorLiveData<List<TaskViewState>> projectsWithTasksMediatorLiveData =
+            new MediatorLiveData<>();
 
 
     public MainActivityViewModel(@NonNull ProjectsRepository projectsRepository,
                                  @NonNull TasksRepository tasksRepository,
                                  @NonNull FilterRepository filterRepository){
-        this.projectsRepository = projectsRepository;
         this.tasksRepository = tasksRepository;
         this.filterRepository = filterRepository;
 
-//        tasksListLiveData = tasksRepository.getTaskListLiveData();
         LiveData<List<ProjectWithTasks>> projectsWithTasksLiveData =
                 projectsRepository.getProjectWithTasksLiveData();
-
-        // TODO : A virer!!
-        numberOfTaskLiveData = tasksRepository.getNumberOfTaskLiveData();
 
         sortMethodLiveData = filterRepository.getRequiredSortingMethod();
 
@@ -66,24 +56,36 @@ public class MainActivityViewModel extends ViewModel {
         projectsWithTasksMediatorLiveData.setValue(
                 TasksSorterUtil.sortBy(sortMethod, taskViewStateList)
         );
+
+        int nbTasks = 0;
+        if (projectWithTasksList != null) {
+            for (ProjectWithTasks projectWithTasks : projectWithTasksList) {
+                nbTasks += projectWithTasks.getTasks().size();
+            }
+        }
+        if (nbTasks == 0){
+            isThereSomeTasks.setValue(false);
+        } else {
+            isThereSomeTasks.setValue(true);
+        }
     }
 
     public void deleteTask(long taskId){
         tasksRepository.deleteTask(taskId);
     }
 
-    public LiveData<List<TaskViewState>> getTasksListMediatorLiveData(){
+    public LiveData<List<TaskViewState>> getProjectsWithTasksMediatorLiveData(){
         return projectsWithTasksMediatorLiveData;
     }
 
     // Transforms ProjectWithTasks objects into TaskViewState objects
-    private List<TaskViewState> mapTasksToTasksViewState(List<ProjectWithTasks> projectWithTaskList) {
+    private List<TaskViewState> mapTasksToTasksViewState(List<ProjectWithTasks> projectWithTasksList) {
 
         List<TaskViewState> taskViewStateList = new ArrayList<>();
-        if (projectWithTaskList != null) {
+        if (projectWithTasksList != null) {
             Project project;
 
-            for (ProjectWithTasks projectWithTasks : projectWithTaskList) {
+            for (ProjectWithTasks projectWithTasks : projectWithTasksList) {
                 project = projectWithTasks.getProject();
                 for (Task task : projectWithTasks.getTasks()) {
                     taskViewStateList.add(new TaskViewState(
@@ -98,11 +100,13 @@ public class MainActivityViewModel extends ViewModel {
         return taskViewStateList;
     }
 
-    public LiveData<Integer> getNumberOfTaskLiveData(){
-        return numberOfTaskLiveData;
-    }
-
+    // Sets the current sorting method
     public void setSortingMethod(PossibleSortMethods requiredSortMethod) {
         filterRepository.setRequiredSortingMethod(requiredSortMethod);
+    }
+
+    // false is there is no tasks, else true
+    public LiveData<Boolean> isThereSomeTaskLiveData(){
+        return isThereSomeTasks;
     }
 }

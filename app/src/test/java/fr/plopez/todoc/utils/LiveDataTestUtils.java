@@ -1,4 +1,4 @@
-package fr.plopez.todoc;
+package fr.plopez.todoc.utils;
 
 import androidx.annotation.Nullable;
 import androidx.lifecycle.LiveData;

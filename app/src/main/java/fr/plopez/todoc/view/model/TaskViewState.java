@@ -1,5 +1,7 @@
 package fr.plopez.todoc.view.model;
 
+import java.util.Objects;
+
 public class TaskViewState {
 
     private final long taskId;
@@ -28,5 +30,28 @@ public class TaskViewState {
 
     public String getProjectName() {
         return projectName;
+    }
+
+    @Override
+    public String toString() {
+        return "TaskViewState{" +
+                "taskName='" + taskName + '\'' +
+                '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        TaskViewState that = (TaskViewState) o;
+        return taskId == that.taskId &&
+                projectColor == that.projectColor &&
+                Objects.equals(taskName, that.taskName) &&
+                Objects.equals(projectName, that.projectName);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(taskId, taskName, projectColor, projectName);
     }
 }

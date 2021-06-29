@@ -35,6 +35,9 @@ public class TasksSorterUtil {
             case OLD_FIRST:
                 Collections.sort(taskViewStateList, new TaskOldComparator());
                 break;
+            case BY_PROJECT:
+                Collections.sort(taskViewStateList, new TaskProjectComparator());
+                break;
         }
 
         return taskViewStateList;
@@ -77,6 +80,16 @@ public class TasksSorterUtil {
         @Override
         public int compare(TaskViewState left, TaskViewState right) {
             return (int) (left.getTaskId() - right.getTaskId());
+        }
+    }
+
+    /**
+     * Comparator to sort task by project
+     */
+    private static class TaskProjectComparator implements Comparator<TaskViewState> {
+        @Override
+        public int compare(TaskViewState left, TaskViewState right) {
+            return left.getProjectName().compareTo(right.getProjectName());
         }
     }
 }

@@ -20,4 +20,8 @@ public enum PossibleSortMethods {
      * First created first
      */
     OLD_FIRST,
+    /**
+     * First created first
+     */
+    BY_PROJECT
 }

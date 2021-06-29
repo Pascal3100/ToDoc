@@ -4,7 +4,6 @@ import androidx.annotation.NonNull;
 import androidx.room.ColumnInfo;
 import androidx.room.Entity;
 import androidx.room.ForeignKey;
-import androidx.room.Ignore;
 import androidx.room.PrimaryKey;
 
 import java.util.Objects;
@@ -24,14 +23,14 @@ public class Task {
     private final String name;
 
     @ColumnInfo(name = "project_id")
-    private long projectId;
+    private final long projectId;
 
     @ColumnInfo(name = "time_stamp")
     private final long creationTimestamp;
 
 
 
-    public Task(@NonNull long projectId, @NonNull String name, long creationTimestamp) {
+    public Task(long projectId, @NonNull String name, long creationTimestamp) {
         this.projectId = projectId;
         this.name = name;
         this.creationTimestamp = creationTimestamp;
@@ -48,7 +47,7 @@ public class Task {
     public long getId() {
         return id;
     }
-    @NonNull
+
     public long getProjectId() {
         return projectId;
     }
@@ -59,7 +58,6 @@ public class Task {
     }
 
     // Generated code
-
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

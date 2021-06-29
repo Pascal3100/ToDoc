@@ -12,9 +12,6 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import fr.plopez.todoc.ViewModelFactory;
 import fr.plopez.todoc.databinding.ActivityMainFragmentBinding;
 
@@ -72,10 +69,10 @@ public class MainActivityFragment extends Fragment implements DeleteTaskListener
         mainActivityFragmentBinding.listTasks.setLayoutManager(new LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false));
         mainActivityFragmentBinding.listTasks.setAdapter(tasksAdapter);
 
-        mainActivityViewModel.getTasksListMediatorLiveData().observe(getViewLifecycleOwner(), tasksAdapter::updateTasks);
+        mainActivityViewModel.getProjectsWithTasksMediatorLiveData().observe(getViewLifecycleOwner(), tasksAdapter::updateTasks);
 
-        mainActivityViewModel.getNumberOfTaskLiveData().observe(getViewLifecycleOwner(), numberOfTasks -> {
-            if (numberOfTasks == 0) {
+        mainActivityViewModel.isThereSomeTaskLiveData().observe(getViewLifecycleOwner(), isThereSomeTask -> {
+            if (!isThereSomeTask) {
                 mainActivityFragmentBinding.listTasks.setVisibility(View.GONE);
                 mainActivityFragmentBinding.lblNoTask.setVisibility(View.VISIBLE);
             } else {

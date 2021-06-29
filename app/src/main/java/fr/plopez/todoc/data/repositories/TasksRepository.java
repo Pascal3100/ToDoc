@@ -1,7 +1,5 @@
 package fr.plopez.todoc.data.repositories;
 
-import android.app.Application;
-
 import androidx.annotation.NonNull;
 import androidx.lifecycle.LiveData;
 
@@ -19,7 +17,6 @@ import fr.plopez.todoc.data.model.Task;
 public class TasksRepository {
 
     private final LiveData<List<Task>> taskListLiveData;
-    private final LiveData<Integer> numberOfTaskLiveData;
     private final TasksDao tasksDao;
     private final Executor ioExecutor;
 
@@ -31,7 +28,6 @@ public class TasksRepository {
         this.tasksDao = tasksDao;
         this.ioExecutor = ioExecutor;
         taskListLiveData = tasksDao.getAllTasks();
-        numberOfTaskLiveData = tasksDao.getNumberOfTasks();
     }
 
     /**
@@ -44,36 +40,17 @@ public class TasksRepository {
     }
 
     /**
-     * Returns the current Number Of Tasks.
-     *
-     * @return numberOfTaskLiveData.
-     */
-    public LiveData<Integer> getNumberOfTaskLiveData(){
-        return numberOfTaskLiveData;
-    }
-
-    /**
      * Add a new task.
      *
      */
     public void addTask(@NonNull Task newTask){
-        ioExecutor.execute(new Runnable() {
-            @Override
-            public void run() {
-                tasksDao.insertTask(newTask);
-            }
-        });
+        ioExecutor.execute(() -> tasksDao.insertTask(newTask));
     }
     /**
      * Deletes an existing task.
      *
      */
     public void deleteTask(long taskIdToDelete){
-        ioExecutor.execute(new Runnable() {
-            @Override
-            public void run() {
-                tasksDao.deleteTask(taskIdToDelete);
-            }
-        });
+        ioExecutor.execute(() -> tasksDao.deleteTask(taskIdToDelete));
     }
 }

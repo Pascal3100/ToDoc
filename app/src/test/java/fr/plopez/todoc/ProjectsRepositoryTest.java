@@ -6,8 +6,11 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 
+import fr.plopez.todoc.data.Dao.ProjectsDao;
 import fr.plopez.todoc.data.model.Project;
 import fr.plopez.todoc.data.repositories.ProjectsRepository;
 
@@ -24,44 +27,43 @@ public class ProjectsRepositoryTest {
     @Rule
     public InstantTaskExecutorRule instantTaskExecutorRule = new InstantTaskExecutorRule();
 
+    // Mocks
+    @Mock
+    private ProjectsDao projectsDaoMock;
+
     // class variables
     private ProjectsRepository projectsRepository;
 
     @Before
     public void SetUp(){
-        // Mock the project generator
-        projectsRepository = new ProjectsRepository();
+        projectsRepository = new ProjectsRepository(projectsDaoMock);
     }
 
-
-    // Verify that the correct project is return when query by name
+    // Verify that the correct method of the DAO is called
     @Test
-    public void require_good_project_by_name_test() {
+    public void verify_getAllProjects_DAO_method_is_called_test() {
 
         // Given
-        String PROJECT_TO_ASK = "Awesome Project";
 
         // When
-        Project result = projectsRepository.getProjectByName(PROJECT_TO_ASK);
+        projectsRepository.getProjectListLiveData();
 
         // Then
-        assertNotNull(result.getName());
-        assertEquals(PROJECT_TO_ASK, result.getName());
+        Mockito.verify(projectsDaoMock, Mockito.times(1))
+                .getAllProjects();
     }
 
-    // Verify that null is return when query by name
+    // Verify that the correct method of the DAO is called
     @Test
-    public void require_bad_project_by_name_test() {
+    public void verify_getAllProjectsWithTasks_DAO_method_is_called_test() {
 
         // Given
-        String BAD_PROJECT_TO_ASK = "BAD_PROJECT_TO_ASK";
 
         // When
-        Project result = projectsRepository.getProjectByName(BAD_PROJECT_TO_ASK);
+        projectsRepository.getProjectWithTasksLiveData();
 
         // Then
-        assertNull(result);
+        Mockito.verify(projectsDaoMock, Mockito.times(1))
+                .getAllProjectsWithTasks();
     }
-
-
 }
