@@ -1,6 +1,5 @@
 package fr.plopez.todoc;
 
-import androidx.annotation.NonNull;
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule;
 
 import org.junit.Before;
@@ -12,14 +11,9 @@ import org.mockito.Mockito;
 import org.mockito.Spy;
 import org.mockito.junit.MockitoJUnitRunner;
 
-import java.util.List;
-
 import fr.plopez.todoc.data.Dao.TasksDao;
-import fr.plopez.todoc.data.model.Project;
 import fr.plopez.todoc.data.model.Task;
 import fr.plopez.todoc.data.repositories.TasksRepository;
-import fr.plopez.todoc.utils.App;
-import fr.plopez.todoc.utils.LiveDataTestUtils;
 import fr.plopez.todoc.utils.TestExecutor;
 
 import static org.junit.Assert.assertEquals;

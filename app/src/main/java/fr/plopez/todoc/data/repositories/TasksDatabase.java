@@ -38,13 +38,13 @@ public abstract class TasksDatabase extends RoomDatabase {
                                 @Override
                                 public void onCreate(@NonNull SupportSQLiteDatabase db) {
                                     super.onCreate(db);
-                                    // If you want to keep data through app restarts,
-                                    // comment out the following block
                                     ioExecutor.execute(() -> {
                                         // Populate the database in the background.
-                                        // If you want to start with more words, just add them.
                                         ProjectsDao dao = INSTANCE.projectsDao();
+                                        // -- Clean all projects from projects table
                                         dao.deleteAllProjects();
+
+                                        // -- Pre-populate projects table with initial default values
                                         dao.insertProject(new Project(
                                                 context.getString(R.string.Awesome_Project),
                                                 context.getColor(R.color.Awesome_Project_color)));

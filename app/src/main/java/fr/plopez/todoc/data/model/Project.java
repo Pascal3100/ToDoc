@@ -6,6 +6,8 @@ import androidx.room.ColumnInfo;
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;
 
+import java.util.Objects;
+
 @Entity(tableName = "project")
 public class Project {
 
@@ -48,5 +50,20 @@ public class Project {
     @NonNull
     public String toString() {
         return name;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Project project = (Project) o;
+        return id == project.id &&
+                color == project.color &&
+                name.equals(project.name);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, name, color);
     }
 }
