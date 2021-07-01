@@ -4,6 +4,7 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 
 import androidx.annotation.NonNull;
+import androidx.core.content.ContextCompat;
 import androidx.room.Database;
 import androidx.room.Room;
 import androidx.room.RoomDatabase;
@@ -31,7 +32,7 @@ public abstract class TasksDatabase extends RoomDatabase {
         if (INSTANCE == null) {
             synchronized (TasksDatabase.class) {
                 if (INSTANCE == null) {
-                    INSTANCE = Room.databaseBuilder(context.getApplicationContext(),
+                    INSTANCE = Room.databaseBuilder(context,
                             TasksDatabase.class, context.getString(R.string.tasks_database))
                             .addCallback(new Callback(){
                                 @SuppressLint("NewApi")
@@ -43,17 +44,16 @@ public abstract class TasksDatabase extends RoomDatabase {
                                         ProjectsDao dao = INSTANCE.projectsDao();
                                         // -- Clean all projects from projects table
                                         dao.deleteAllProjects();
-
                                         // -- Pre-populate projects table with initial default values
                                         dao.insertProject(new Project(
                                                 context.getString(R.string.Awesome_Project),
-                                                context.getColor(R.color.Awesome_Project_color)));
+                                                context.getResources().getColor(R.color.Awesome_Project_color)));
                                         dao.insertProject(new Project(
                                                 context.getString(R.string.Miraculous_Actions),
-                                                context.getColor(R.color.Miraculous_Actions_color)));
+                                                context.getResources().getColor(R.color.Miraculous_Actions_color)));
                                         dao.insertProject(new Project(
                                                 context.getString(R.string.Circus_Project),
-                                                context.getColor(R.color.Circus_Project_color)));
+                                                context.getResources().getColor(R.color.Circus_Project_color)));
                                     });
                                 }
                             })
