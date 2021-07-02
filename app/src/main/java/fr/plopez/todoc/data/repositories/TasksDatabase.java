@@ -4,7 +4,6 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 
 import androidx.annotation.NonNull;
-import androidx.core.content.ContextCompat;
 import androidx.room.Database;
 import androidx.room.Room;
 import androidx.room.RoomDatabase;
@@ -17,7 +16,6 @@ import fr.plopez.todoc.data.Dao.ProjectsDao;
 import fr.plopez.todoc.data.Dao.TasksDao;
 import fr.plopez.todoc.data.model.Project;
 import fr.plopez.todoc.data.model.Task;
-import fr.plopez.todoc.data.utils.FakeProjectsGenerator;
 
 @Database(entities = {Task.class, Project.class}, version = 1, exportSchema = false)
 public abstract class TasksDatabase extends RoomDatabase {
