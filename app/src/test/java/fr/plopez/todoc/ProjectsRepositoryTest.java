@@ -11,12 +11,7 @@ import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import fr.plopez.todoc.data.Dao.ProjectsDao;
-import fr.plopez.todoc.data.model.Project;
 import fr.plopez.todoc.data.repositories.ProjectsRepository;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
 
 @RunWith(MockitoJUnitRunner.class)
 public class ProjectsRepositoryTest {

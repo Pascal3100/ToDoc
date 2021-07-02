@@ -16,7 +16,6 @@ import fr.plopez.todoc.data.model.Task;
 import fr.plopez.todoc.data.repositories.TasksRepository;
 import fr.plopez.todoc.utils.TestExecutor;
 
-import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -37,7 +36,7 @@ public class TasksRepositoryTest {
     private TasksDao tasksDaoMock;
 
     @Spy
-    private TestExecutor testExecutor = new TestExecutor();
+    private final TestExecutor testExecutor = new TestExecutor();
 
     // Class variables
     private TasksRepository tasksRepository;
@@ -64,7 +63,7 @@ public class TasksRepositoryTest {
 
     // verify that tasks are correctly added
     @Test
-    public void delete_Task_test() throws InterruptedException {
+    public void delete_Task_test() {
 
         // Given
 

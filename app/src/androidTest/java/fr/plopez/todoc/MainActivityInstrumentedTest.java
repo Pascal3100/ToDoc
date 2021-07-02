@@ -8,6 +8,7 @@ import androidx.test.ext.junit.runners.AndroidJUnit4;
 
 import fr.plopez.todoc.utils.DeleteViewAction;
 import fr.plopez.todoc.utils.RecyclerViewItemCountAssertion;
+import fr.plopez.todoc.view.add_task.AddTaskViewState;
 import fr.plopez.todoc.view.main.MainActivity;
 
 import org.junit.Before;
@@ -28,7 +29,7 @@ import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 import static androidx.test.platform.app.InstrumentationRegistry.getInstrumentation;
 import static fr.plopez.todoc.utils.TestUtils.withRecyclerView;
-import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.instanceOf;
 import static org.hamcrest.core.AllOf.allOf;
 import static org.hamcrest.core.IsNull.notNullValue;
 import static org.junit.Assert.assertThat;
@@ -42,18 +43,20 @@ import static org.junit.Assert.assertThat;
 @RunWith(AndroidJUnit4.class)
 public class MainActivityInstrumentedTest {
 
-    private static final String SELECTED_PROJECT = "Awesome Project";
     private static final String TASK_NAME_1 = "AA_Awesome new task";
     private static final String TASK_NAME_2 = "ZZ_Awesome new task";
     private static final String TASK_NAME_3 = "KK_Awesome new task";
 
     @Rule
-    public final ActivityScenarioRule<MainActivity> activityScenarioRule = new ActivityScenarioRule<>(MainActivity.class);
+    public final ActivityScenarioRule<MainActivity> activityScenarioRule =
+            new ActivityScenarioRule<>(MainActivity.class);
 
     @Before
     public void setUp(){
         ActivityScenario<MainActivity> activityScenario = activityScenarioRule.getScenario();
         assertThat(activityScenario, notNullValue());
+        // Delete the database before each test
+        getInstrumentation().getContext().deleteDatabase(String.valueOf(R.string.tasks_database));
     }
 
     // Verify initial conditions
@@ -84,24 +87,8 @@ public class MainActivityInstrumentedTest {
     @Test
     public void add_task_test(){
 
-        // Click on the floating action button to load the add activity
-        onView(withId(R.id.fab_add_task)).perform(click());
-
-        // Set a new task name
-        onView(withId(R.id.txt_task_name)).perform(replaceText(TASK_NAME_1));
-
-        // Select a project
-        onView(withId(R.id.project_spinner)).perform(click());
-        onData(is(SELECTED_PROJECT))
-                .inRoot(isPlatformPopup())
-                .perform(click());
-
-        // Click on add button
-        onView(withId(R.id.add_task_button)).perform(click());
-
-        // Verify that we are back to main screen
-        onView(withId(R.id.main_activity_fragment_container))
-                .check(matches(isDisplayed()));
+        // Add a Task
+        addTask(TASK_NAME_1, 1);
 
         // Verify that no tasks are available and recyclerView is VISIBLE
         onView(withId(R.id.list_tasks))
@@ -121,47 +108,13 @@ public class MainActivityInstrumentedTest {
 
     // Test that a task is correctly deleted
     @Test
-    public void delete_task_test(){
+    public void delete_task_test() throws InterruptedException {
 
         // Add First Task
-        // Click on the floating action button to load the add activity
-        onView(withId(R.id.fab_add_task)).perform(click());
-
-        // Set a new task name
-        onView(withId(R.id.txt_task_name)).perform(replaceText(TASK_NAME_1));
-
-        // Select a project
-        onView(withId(R.id.project_spinner)).perform(click());
-        onData(is(SELECTED_PROJECT))
-                .inRoot(isPlatformPopup())
-                .perform(click());
-
-        // Click on add button
-        onView(withId(R.id.add_task_button)).perform(click());
-
-        // Verify that we are back to main screen
-        onView(withId(R.id.main_activity_fragment_container))
-                .check(matches(isDisplayed()));
+        addTask(TASK_NAME_1, 1);
 
         // Add Second Task
-        // Click on the floating action button to load the add activity
-        onView(withId(R.id.fab_add_task)).perform(click());
-
-        // Set a new task name
-        onView(withId(R.id.txt_task_name)).perform(replaceText(TASK_NAME_2));
-
-        // Select a project
-        onView(withId(R.id.project_spinner)).perform(click());
-        onData(is(SELECTED_PROJECT))
-                .inRoot(isPlatformPopup())
-                .perform(click());
-
-        // Click on add button
-        onView(withId(R.id.add_task_button)).perform(click());
-
-        // Verify that we are back to main screen
-        onView(withId(R.id.main_activity_fragment_container))
-                .check(matches(isDisplayed()));
+        addTask(TASK_NAME_2, 1);
 
         // Verify that a new tasks are added
         onView(allOf(withId(R.id.list_tasks), isDisplayed()))
@@ -172,16 +125,22 @@ public class MainActivityInstrumentedTest {
                 .perform(RecyclerViewActions.actionOnItemAtPosition(
                         0, new DeleteViewAction()));
 
+        // Wait a bit to allow the view to be updated (because of the DB operations on separate thread)
+        Thread.sleep(500);
+
         // Verify that task is deleted
         onView(allOf(withId(R.id.list_tasks), isDisplayed()))
                 .check(RecyclerViewItemCountAssertion.withItemCount(1));
         onView(withRecyclerView(R.id.list_tasks).atPositionOnView(0, R.id.lbl_task_name))
         .check(matches(withText(TASK_NAME_1)));
 
-        // Delete the first created task
+        // Delete the second created task
         onView(allOf(withId(R.id.list_tasks), isDisplayed()))
                 .perform(RecyclerViewActions.actionOnItemAtPosition(
                         0, new DeleteViewAction()));
+
+        // Wait a bit to allow the view to be updated (because of the DB operations on separate thread)
+        Thread.sleep(500);
 
         // Verify that no tasks are available and recyclerView is GONE
         onView(withId(R.id.list_tasks))
@@ -196,58 +155,15 @@ public class MainActivityInstrumentedTest {
     public void sortTasks() {
 
         // Add First Task
-        // Click on the floating action button to load the add activity
-        onView(withId(R.id.fab_add_task)).perform(click());
-
-        // Set a new task name
-        onView(withId(R.id.txt_task_name)).perform(replaceText(TASK_NAME_1));
-
-        // Select a project
-        onView(withId(R.id.project_spinner)).perform(click());
-        onData(is(SELECTED_PROJECT))
-                .inRoot(isPlatformPopup())
-                .perform(click());
-
-        // Click on add button
-        onView(withId(R.id.add_task_button)).perform(click());
+        addTask(TASK_NAME_1, 1);
 
         // Add Second Task
-        // Click on the floating action button to load the add activity
-        onView(withId(R.id.fab_add_task)).perform(click());
-
-        // Set a new task name
-        onView(withId(R.id.txt_task_name)).perform(replaceText(TASK_NAME_2));
-
-        // Select a project
-        onView(withId(R.id.project_spinner)).perform(click());
-        onData(is(SELECTED_PROJECT))
-                .inRoot(isPlatformPopup())
-                .perform(click());
-
-        // Click on add button
-        onView(withId(R.id.add_task_button)).perform(click());
-
-        // Verify that a new tasks are added
-        onView(allOf(withId(R.id.list_tasks), isDisplayed()))
-                .check(RecyclerViewItemCountAssertion.withItemCount(2));
+        addTask(TASK_NAME_2, 2);
 
         // Add Third Task
-        // Click on the floating action button to load the add activity
-        onView(withId(R.id.fab_add_task)).perform(click());
+        addTask(TASK_NAME_3, 3);
 
-        // Set a new task name
-        onView(withId(R.id.txt_task_name)).perform(replaceText(TASK_NAME_3));
-
-        // Select a project
-        onView(withId(R.id.project_spinner)).perform(click());
-        onData(is(SELECTED_PROJECT))
-                .inRoot(isPlatformPopup())
-                .perform(click());
-
-        // Click on add button
-        onView(withId(R.id.add_task_button)).perform(click());
-
-        // Verify that a new tasks are added
+        // Verify we have 3 tasks as expected
         onView(allOf(withId(R.id.list_tasks), isDisplayed()))
                 .check(RecyclerViewItemCountAssertion.withItemCount(3));
 
@@ -288,5 +204,37 @@ public class MainActivityInstrumentedTest {
                 .check(matches(withText(TASK_NAME_2)));
         onView(withRecyclerView(R.id.list_tasks).atPositionOnView(2, R.id.lbl_task_name))
                 .check(matches(withText(TASK_NAME_3)));
+
+        // Sort by project
+        openActionBarOverflowOrOptionsMenu(getInstrumentation().getTargetContext());
+        onView(withText(R.string.sort_by_project)).perform(click());
+        onView(withRecyclerView(R.id.list_tasks).atPositionOnView(0, R.id.lbl_task_name))
+                .check(matches(withText(TASK_NAME_1)));
+        onView(withRecyclerView(R.id.list_tasks).atPositionOnView(1, R.id.lbl_task_name))
+                .check(matches(withText(TASK_NAME_3)));
+        onView(withRecyclerView(R.id.list_tasks).atPositionOnView(2, R.id.lbl_task_name))
+                .check(matches(withText(TASK_NAME_2)));
+    }
+
+    private void addTask(String taskName, int projectPosition){
+        // Click on the floating action button to load the add activity
+        onView(withId(R.id.fab_add_task)).perform(click());
+
+        // Set a new task name
+        onView(withId(R.id.txt_task_name)).perform(replaceText(taskName));
+
+        // Select a project
+        onView(withId(R.id.project_spinner)).perform(click());
+        onData(instanceOf(AddTaskViewState.class))
+                .atPosition(projectPosition)
+                .inRoot(isPlatformPopup())
+                .perform(click());
+
+        // Click on add button
+        onView(withId(R.id.add_task_button)).perform(click());
+
+        // Verify that we are back to main screen
+        onView(withId(R.id.main_activity_fragment_container))
+                .check(matches(isDisplayed()));
     }
 }

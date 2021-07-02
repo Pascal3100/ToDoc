@@ -16,7 +16,7 @@
     <string name="task_name_hint">Nom de la tâche</string>
 
     <string name="empty_task_name">Le nom de la tâche doit être renseigné</string>
-    <string name="filter_by_project">Filter par projet</string>
+    <string name="sort_by_project">Trier par projet</string>
     <string name="tasks_database">tasks_database</string>
 
     <string name="Awesome_Project">Awesome Project</string>

@@ -21,6 +21,6 @@
         app:showAsAction="never|withText" />
     <item
         android:id="@+id/filter_by_project"
-        android:title="@string/filter_by_project"
+        android:title="@string/sort_by_project"
         app:showAsAction="never|withText" />
 </menu>
